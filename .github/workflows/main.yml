@@ -41,7 +41,7 @@ jobs:
           az deployment group create \
             --resource-group komatsu-poc \
             --template-file main.bicep \
-            --parameters adfName=my-adf
+            --parameters adfName=komatsu-test-poc
 
       - name: Deploy Pipelines in Order
         run: |

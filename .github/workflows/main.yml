@@ -28,6 +28,9 @@ jobs:
                 }
           enable-AzPSSession: true
 
+      - name: Debug Azure Login
+        run: az account show
+
       - name: Read Pipeline Dependencies
         id: dependencies
         run: |
@@ -36,7 +39,7 @@ jobs:
       - name: Deploy ADF Instance
         run: |
           az deployment group create \
-            --resource-group my-resource-group \
+            --resource-group komatsu-poc \
             --template-file main.bicep \
             --parameters adfName=my-adf
 

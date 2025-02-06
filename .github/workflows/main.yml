@@ -59,7 +59,7 @@ jobs:
             done
             echo "Deploying $pipeline..."
             az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $pipeline --pipeline "$(cat ./pipelines/$pipeline.json)"
+              --name $pipeline --pipeline "$(cat pipeline/$pipeline.json)"
             deployed+=("$pipeline")
           }
 

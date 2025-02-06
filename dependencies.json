@@ -1,0 +1,5 @@
+{
+    "pipeline1": [],
+    "pipeline2": ["pipeline1"]
+}
+  

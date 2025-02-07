@@ -85,7 +85,7 @@ jobs:
             done
             echo "Deploying Linked Service: $linked_service..."
             az datafactory linked-service create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $linked_service --linkedService "$(cat linkedService/$linked_service.json)"
+              --name $linked_service --properties "$(cat linkedService/$linked_service.json)"
             deployed+=("$linked_service")
           }
 

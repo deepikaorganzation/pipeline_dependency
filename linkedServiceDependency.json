@@ -1,4 +1,4 @@
 {
-    "AzureKeyVaultPOC": [],
-    "AzureBlobStoragePOC": ["AzureKeyVaultPOC"]
+    "AzureKeyVault": [],
+    "AzureBlobStorage": ["AzureKeyVault"]
 }

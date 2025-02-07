@@ -35,7 +35,7 @@ jobs:
         id: dependencies
         run: |
           echo "PIPELINE_DEPENDENCIES=$(jq -c . dependencies.json)" >> $GITHUB_ENV
-          echo "LINKED_SERVICE_DEPENDENCIES=$(jq -c . linked-services.json)" >> $GITHUB_ENV
+          echo "LINKED_SERVICE_DEPENDENCIES=$(jq -c . linkedServiceDependency.json)" >> $GITHUB_ENV
 
       - name: Deploy ADF Instance
         run: |

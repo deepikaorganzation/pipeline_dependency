@@ -68,27 +68,27 @@ jobs:
             deploy_pipeline $pipeline
           done
 
-
       - name: Deploy Linked Services in Order
         run: |
-          linked_services='${{ env.LINKED_SERVICE_DEPENDENCIES }}'
+          linked_services='${{ env.LINKED_SERVICES_DEPENDENCIES }}'
           deployed=()
-
+  
           deploy_linked_service() {
             local linked_service=$1
             if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
               echo "$linked_service already deployed."
               return
             fi
+            # Deploy dependencies first
             for dep in $(echo $linked_services | jq -r ".[\"$linked_service\"][]"); do
               deploy_linked_service $dep
             done
             echo "Deploying Linked Service: $linked_service..."
             az datafactory linked-service create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $linked_service --properties "$(cat linkedService/$linked_service.json)"
+              --name $linked_service --json-file "linkedService/$linked_service.json"
             deployed+=("$linked_service")
           }
-
+  
           for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
             deploy_linked_service $linked_service
           done

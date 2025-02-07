@@ -70,7 +70,7 @@ jobs:
 
       - name: Deploy Linked Services in Order
         run: |
-          linked_services='${{ env.LINKED_SERVICES_DEPENDENCIES }}'
+          linked_services='${{ env.LINKED_SERVICE_DEPENDENCIES }}'
           deployed=()
   
           deploy_linked_service() {

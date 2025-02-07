@@ -86,7 +86,7 @@ jobs:
             echo "Deploying Linked Service: $linked_service..."
             prop="$(cat linkedService/$linked_service.json)"
             az datafactory linked-service create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $linked_service --properties "$(jq '.properties' $prop)"
+              --name $linked_service --properties "$(jq '.properties' <<< "$prop")"
             deployed+=("$linked_service")
           }
   

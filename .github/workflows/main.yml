@@ -90,7 +90,7 @@ jobs:
               exit 1
           fi
 
-          linkedService1=$(jq -c '.' linkedService/"$LINKED_SERVICE_NAME".json 2>/dev/null)
+          linkedService1=$(cat ./linkedService/$LINKED_SERVICE_NAME.json)
 
           # Check if JSON parsing was successful
           if [[ -z "$linkedService1" || "$linkedService1" == "null" ]]; then
@@ -99,7 +99,7 @@ jobs:
           fi
 
           # Construct JSON object correctly
-          linkedServices=$(jq -c --arg name "$NEW_NAME_LS" --argjson definition "$linkedService1" \
+          linkedServices=$(jq -n --arg definition "$linkedService1" \
           '[ 
             {
               "name": $name, 

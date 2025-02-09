@@ -103,10 +103,6 @@ jobs:
               --resource-group komatsu-poc \
               --template-file linkedService.bicep \
               --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
-            az deployment group create \
-              --resource-group komatsu-poc \
-              --template-file linkedService.bicep \
-              --parameters adfName=komatsu-test-poc linkedServices="$NEW_JSON"
           done
 
 

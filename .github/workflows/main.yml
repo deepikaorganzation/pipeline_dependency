@@ -46,6 +46,14 @@ jobs:
       # - name: Deploy Pipelines in Order
       #   run: |
       #     for row in $(echo "$PIPELINES" | jq -c '.[]'); do
+        #       NEW_JSON=$(jq --arg env "$ENV_VAR" \
+        #   '(.name | sub("dev|qa|uat|prod"; $env; "g")) as $newName 
+        #   | (.properties.activities[].typeProperties.pipeline.referenceName | sub("dev|qa|uat|prod"; $env; "g")) as $newReference 
+        #   | .name = $newName 
+        #   | .properties.activities[].typeProperties.pipeline.referenceName = $newReference' pipeline/pipeline2-dev-kx.json)
+
+        # echo "$NEW_JSON"
+
       #       PIPELINE_NAME=$(echo "$row" | jq -r '.name')
       #       NEW_NAME=$(jq -r --arg env "$ENV_VAR" --arg pipeline "$PIPELINE_NAME" \
       #         '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/"$PIPELINE_NAME".json)
@@ -68,54 +76,86 @@ jobs:
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-            # Ensure LINKED_SERVICE_NAME is not empty
-            if [[ -z "$LINKED_SERVICE_NAME" ]]; then
-                echo "Error: LINKED_SERVICE_NAME is empty" >&2
-                exit 1
-            fi
-            echo "$LINKED_SERVICE_NAME"
-            # Modify the name dynamically based on the environment
-            NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg linkedService "$LINKED_SERVICE_NAME"  '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
-            echo "$NEW_NAME_LS"
-            # Ensure NEW_NAME_LS is not empty
-            if [[ -z "$NEW_NAME_LS" ]]; then
-                echo "Error: NEW_NAME_LS is empty" >&2
-                exit 1
-            fi
 
-            # Validate and read JSON file
-            if [[ ! -f "linkedService/$LINKED_SERVICE_NAME.json" ]]; then
-                echo "Error: linkedService/$LINKED_SERVICE_NAME.json file does not exist" >&2
-                exit 1
-            fi
+            NEW_JSON=$(jq --arg env "$ENV_VAR" \
+              '(.name | sub("dev|qa|uat|prod"; $env; "g")) as $newName 
+              | (.properties.typeProperties.connectionString.store.referenceName | sub("dev|qa|uat|prod"; $env; "g")) as $newReference 
+              | .name = $newName 
+              | .properties.typeProperties.connectionString.store.referenceName = $newReference' linkedService/"$LINKED_SERVICE_NAME".json)
 
-            linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
-            echo "$linkedServiceDefinition"
-            # Check if JSON parsing was successful
-            if [[ -z "$linkedServiceDefinition" || "$linkedServiceDefinition" == "null" ]]; then
-                echo "Error: linkedServiceDefinition JSON is empty or invalid" >&2
-                exit 1
-            fi
-
+            echo "Deploying Linked Service: $NEW_JSON"
+            linkedService1=$(cat NEW_JSON)
             # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$linkedServiceDefinition" \
+            linkedServices=$(jq -n --arg linkedService1 "$linkedService1" \
             '[ 
               {
                 "name": $name, 
-                "definition": $definition  
+                "definition": $linkedService1 | fromjson  
               }
             ]')
             echo "$linkedServices"
-            # Ensure linkedServices is valid JSON
-            if [[ -z "$linkedServices" || "$linkedServices" == "null" ]]; then
-                echo "Error: linkedServices JSON is empty or invalid" >&2
-                exit 1
-            fi
-
-            echo "Deploying Linked Service: $NEW_NAME_LS"
-
+            
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file linkedService.bicep \
               --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
+            az deployment group create \
+              --resource-group komatsu-poc \
+              --template-file linkedService.bicep \
+              --parameters adfName=komatsu-test-poc linkedServices="$NEW_JSON"
           done
+
+
+        # for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
+        #   LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
+        #   # Ensure LINKED_SERVICE_NAME is not empty
+        #   if [[ -z "$LINKED_SERVICE_NAME" ]]; then
+        #       echo "Error: LINKED_SERVICE_NAME is empty" >&2
+        #       exit 1
+        #   fi
+        #   echo "$LINKED_SERVICE_NAME"
+        #   # Modify the name dynamically based on the environment
+        #   NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg linkedService "$LINKED_SERVICE_NAME"  '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
+        #   echo "$NEW_NAME_LS"
+        #   # Ensure NEW_NAME_LS is not empty
+        #   if [[ -z "$NEW_NAME_LS" ]]; then
+        #       echo "Error: NEW_NAME_LS is empty" >&2
+        #       exit 1
+        #   fi
+
+        #   # Validate and read JSON file
+        #   if [[ ! -f "linkedService/$LINKED_SERVICE_NAME.json" ]]; then
+        #       echo "Error: linkedService/$LINKED_SERVICE_NAME.json file does not exist" >&2
+        #       exit 1
+        #   fi
+
+        #   linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
+        #   echo "$linkedServiceDefinition"
+        #   # Check if JSON parsing was successful
+        #   if [[ -z "$linkedServiceDefinition" || "$linkedServiceDefinition" == "null" ]]; then
+        #       echo "Error: linkedServiceDefinition JSON is empty or invalid" >&2
+        #       exit 1
+        #   fi
+
+        #   # Construct JSON object correctly
+        #   linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$linkedServiceDefinition" \
+        #   '[ 
+        #     {
+        #       "name": $name, 
+        #       "definition": $definition  
+        #     }
+        #   ]')
+        #   echo "$linkedServices"
+        #   # Ensure linkedServices is valid JSON
+        #   if [[ -z "$linkedServices" || "$linkedServices" == "null" ]]; then
+        #       echo "Error: linkedServices JSON is empty or invalid" >&2
+        #       exit 1
+        #   fi
+
+        #   echo "Deploying Linked Service: $NEW_NAME_LS"
+
+        #   az deployment group create \
+        #     --resource-group komatsu-poc \
+        #     --template-file linkedService.bicep \
+        #     --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
+        # done

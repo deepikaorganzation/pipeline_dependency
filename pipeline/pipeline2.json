@@ -12,7 +12,7 @@
                 "userProperties": [],
                 "typeProperties": {
                     "pipeline": {
-                        "referenceName": "pipeline1",
+                        "referenceName": "pipeline1-dev-kx",
                         "type": "PipelineReference"
                     },
                     "waitOnCompletion": true

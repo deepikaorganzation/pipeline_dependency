@@ -52,12 +52,6 @@ jobs:
           PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
 
-      - name: Extract LinkedService Order from JSON
-        id: get_pipeline_order
-        run: |
-          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
-          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
-
       - name: Deploy Pipelines in Order
         run: |
           for row in $(echo "$PIPELINES" | jq -c '.[]'); do

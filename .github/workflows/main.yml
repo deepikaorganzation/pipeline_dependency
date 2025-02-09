@@ -93,5 +93,5 @@ jobs:
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file linkedService.bicep \
-              --parameters factoryName=komatsu-test-poc linkedServices=$linkedServices
+              --parameters adfName=komatsu-test-poc linkedServices=$linkedServices
           done

@@ -1,12 +1,11 @@
-param adfName string
-param pipelines array
+param factoryName string
+param pipelineName string
 
-resource adf 'Microsoft.DataFactory/factories@2018-06-01' existing = {
-  name: adfName
+
+resource pipeline 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = {
+  name: '${factoryName}/${pipelineName}'
+  properties: {
+    activities: []
+  }
 }
 
-resource pipelinesDeploy 'Microsoft.DataFactory/factories/pipelines@2018-06-01' = [for pipeline in pipelines: {
-  parent: adf
-  name: pipeline.name
-  properties: pipeline.properties
-}]

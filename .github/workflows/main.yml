@@ -46,29 +46,23 @@ jobs:
             --template-file main.bicep \
             --parameters adfName=komatsu-test-poc
 
+      - name: Extract Pipeline Order from JSON
+        id: get_pipeline_order
+        run: |
+          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependency.json)
+          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
+
       - name: Deploy Pipelines in Order
         run: |
-          dependencies='${{ env.PIPELINE_DEPENDENCIES }}'
-          deployed=()
-
-          deploy_pipeline() {
-            local pipeline=$1
-            if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
-              echo "$pipeline already deployed."
-              return
-            fi
-            for dep in $(echo $dependencies | jq -r ".[\"$pipeline\"][]"); do
-              deploy_pipeline $dep
-            done
-            echo "Deploying $pipeline..."
-            NEW_NAME=$(jq -r --arg env "$ENV_VAR" '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/$pipeline.json)
-            az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $NEW_NAME --pipeline "$(cat pipeline/$pipeline.json)"
-            deployed+=("$pipeline")
-          }
-
-          for pipeline in $(echo $dependencies | jq -r 'keys[]'); do
-            deploy_pipeline $pipeline
+          for row in $(echo "$PIPELINES" | jq -c '.[]'); do
+            PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+            NEW_NAME=$(jq -r --arg env "$ENVIRONMENT" --arg pipeline "$PIPELINE_NAME" \
+              '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/"$PIPELINE_NAME".json)
+            echo "Deploying $PIPELINE_NAME..."
+            az deployment group create \
+              --resource-group komatsu-poc \
+              --template-file pipeline.bicep \
+              --parameters factoryName=$DATA_FACTORY_NAME pipelineName=$NEW_NAME
           done
 
       - name: Deploy Linked Services in Order

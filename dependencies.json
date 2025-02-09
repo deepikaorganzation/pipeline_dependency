@@ -1,5 +1,14 @@
 {
-    "pipeline1": [],
-    "pipeline2": ["pipeline1"]
+    "pipelines": [
+      {
+        "name": "pipeline1",
+        "dependsOn": []
+      },
+      {
+        "name": "pipeline2",
+        "dependsOn": ["pipeline1"]
+      }
+    ]
+    
+    
 }
-  

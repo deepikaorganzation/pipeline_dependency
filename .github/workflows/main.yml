@@ -89,16 +89,16 @@ jobs:
                 exit 1
             fi
 
-            linkedService1=$(cat ./linkedService/$LINKED_SERVICE_NAME.json)
-
+            linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
+            echo "$linkedServiceDefinition"
             # Check if JSON parsing was successful
-            if [[ -z "$linkedService1" || "$linkedService1" == "null" ]]; then
-                echo "Error: linkedService1 JSON is empty or invalid" >&2
+            if [[ -z "$linkedServiceDefinition" || "$linkedServiceDefinition" == "null" ]]; then
+                echo "Error: linkedServiceDefinition JSON is empty or invalid" >&2
                 exit 1
             fi
 
             # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --arg definition "$linkedService1" \
+            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$linkedServiceDefinition" \
             '[ 
               {
                 "name": $name, 

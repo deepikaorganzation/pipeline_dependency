@@ -102,7 +102,7 @@ jobs:
           linkedServices=$(jq -n --arg definition "$linkedService1" \
           '[ 
             {
-              "name": $name, 
+              "name": $NEW_NAME_LS, 
               "definition": $definition  
             }
           ]')

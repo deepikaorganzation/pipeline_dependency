@@ -75,17 +75,16 @@ jobs:
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-            NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg linkeService "$LINKED_SERVICE_NAME" \
-              '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
+            NEW_NAME_LS=$(echo "$LINKED_SERVICE_NAME" | jq -r --arg env "$ENV_VAR" \
+              'sub("dev|qa|uat|prod"; $env; "g")')
             # Modify the name dynamically based on the environment
            
-            linkedService1=$(cat ./linkedService/"$LINKED_SERVICE_NAME".json)
-            linkedServices=$(jq -n \
-            --arg linkedService1 "$linkedService1" \
+            linkedService1=$(jq -c '.' linkedService/"$LINKED_SERVICE_NAME".json)
+            linkedServices=$(jq -c --arg name "$NEW_NAME_LS" --argjson definition "$linkedService1" \
             '[ 
               {
-                "name": $NEW_NAME_LS, 
-                "definition": $linkedService1 | fromjson  
+                "name": $name, 
+                "definition": $definition  
               }
             ]')
             echo "Deploying Linked Service: $NEW_NAME_LS"
@@ -93,5 +92,5 @@ jobs:
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file linkedService.bicep \
-              --parameters adfName=komatsu-test-poc linkedServices=$linkedServices
+              --parameters adfName=komatsu-test-poc linkedServices=$"linkedServices"
           done

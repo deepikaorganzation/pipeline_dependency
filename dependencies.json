@@ -9,7 +9,7 @@
         "dependsOn": ["pipeline1"]
       }
     ],
-    "linkedService": [
+    "linkedServices": [
         {
             "name": "AzureKeyVaultPOC",
             "dependsOn": []

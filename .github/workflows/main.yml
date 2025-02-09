@@ -62,7 +62,7 @@ jobs:
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file pipeline.bicep \
-              --parameters factoryName=$DATA_FACTORY_NAME pipelineName=$NEW_NAME
+              --parameters factoryName=komatsu-test-poc pipelineName=$NEW_NAME
           done
 
       - name: Deploy Linked Services in Order

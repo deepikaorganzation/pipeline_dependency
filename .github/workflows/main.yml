@@ -46,7 +46,8 @@ jobs:
       - name: Deploy Pipelines in Order
         run: |
           for row in $(echo "$PIPELINES" | jq -c '.[]'); do
-             NEW_JSON=$(jq --arg env "$ENV_VAR" \
+            PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+            NEW_JSON=$(jq --arg env "$ENV_VAR" \
               '(.name // "") as $origName
               | (.properties.activities[].typeProperties.pipeline.referenceName // "") as $origReference
               | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
@@ -54,15 +55,18 @@ jobs:
 
 
             echo "$NEW_JSON"
-
-            PIPELINE_NAME=$(echo "$NEW_JSON" | jq -r '.name')
-            NEW_NAME=$(jq -r --arg env "$ENV_VAR" --arg pipeline "$PIPELINE_NAME" \
-              '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/"$PIPELINE_NAME".json)
-            echo "Deploying $PIPELINE_NAME..."
+            NEW_NAME_PL=$(echo "$NEW_JSON" | jq -r '.name')
+            pipeline=$(jq -n --arg name "$NEW_NAME_PL" --argjson definition "$NEW_JSON" \
+              '[ 
+                {
+                  "name": $name, 
+                  "definition": $definition
+                }
+              ]')
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file pipeline.bicep \
-              --parameters factoryName=komatsu-test-poc pipelineName=$NEW_NAME
+              --parameters factoryName=komatsu-test-poc pipelineName=$pipeline
           done
 
       - name: Extract Linked Service Order from JSON

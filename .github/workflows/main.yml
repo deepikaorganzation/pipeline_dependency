@@ -75,10 +75,10 @@ jobs:
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-            
-            # Modify the name dynamically based on the environment
-            NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg name "$LINKED_SERVICE_NAME" \
+            NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg linkeService "$LINKED_SERVICE_NAME" \
               '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
+            # Modify the name dynamically based on the environment
+           
             linkedService1=$(cat ./linkedService/"$LINKED_SERVICE_NAME".json)
             linkedServices=$(jq -n \
             --arg linkedService1 "$linkedService1" \

@@ -13,11 +13,11 @@
         {
             "name": "AzureKeyVaultPOC",
             "dependsOn": []
-          },
-          {
-            "name": "AzureBlobStoragePOC",
-            "dependsOn": ["AzureKeyVaultPOC"]
-          }
+        },
+        {
+        "name": "AzureBlobStoragePOC",
+        "dependsOn": ["AzureKeyVaultPOC"]
+        }
     ]
     
 }

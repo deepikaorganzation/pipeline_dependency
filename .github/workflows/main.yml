@@ -30,15 +30,6 @@ jobs:
                 }
           enable-AzPSSession: true
 
-      - name: Debug Azure Login
-        run: az account show
-
-      - name: Read Pipeline Dependencies
-        id: dependencies
-        run: |
-          echo "PIPELINE_DEPENDENCIES=$(jq -c . dependencies.json)" >> $GITHUB_ENV
-          echo "LINKED_SERVICE_DEPENDENCIES=$(jq -c . linkedServiceDependency.json)" >> $GITHUB_ENV
-
       - name: Deploy ADF Instance
         run: |
           az deployment group create \
@@ -46,36 +37,37 @@ jobs:
             --template-file main.bicep \
             --parameters adfName=komatsu-test-poc
 
-      - name: Extract Pipeline Order from JSON
-        id: get_pipeline_order
-        run: |
-          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
-          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
+      # - name: Extract Pipeline Order from JSON
+      #   id: get_pipeline_order
+      #   run: |
+      #     PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
+      #     echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
 
-      - name: Deploy Pipelines in Order
-        run: |
-          for row in $(echo "$PIPELINES" | jq -c '.[]'); do
-            PIPELINE_NAME=$(echo "$row" | jq -r '.name')
-            NEW_NAME=$(jq -r --arg env "$ENV_VAR" --arg pipeline "$PIPELINE_NAME" \
-              '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/"$PIPELINE_NAME".json)
-            echo "Deploying $PIPELINE_NAME..."
-            az deployment group create \
-              --resource-group komatsu-poc \
-              --template-file pipeline.bicep \
-              --parameters factoryName=komatsu-test-poc pipelineName=$NEW_NAME
-          done
+      # - name: Deploy Pipelines in Order
+      #   run: |
+      #     for row in $(echo "$PIPELINES" | jq -c '.[]'); do
+      #       PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+      #       NEW_NAME=$(jq -r --arg env "$ENV_VAR" --arg pipeline "$PIPELINE_NAME" \
+      #         '.name | sub("dev|qa|uat|prod"; $env; "g")' pipeline/"$PIPELINE_NAME".json)
+      #       echo "Deploying $PIPELINE_NAME..."
+      #       az deployment group create \
+      #         --resource-group komatsu-poc \
+      #         --template-file pipeline.bicep \
+      #         --parameters factoryName=komatsu-test-poc pipelineName=$NEW_NAME
+      #     done
 
       - name: Extract Linked Service Order from JSON
         id: get_linked_service_order
         run: |
           LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
           echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+          
+          echo "$LINKED_SERVICES"
 
       - name: Deploy Linked Services in Order
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
           LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-
           # Ensure LINKED_SERVICE_NAME is not empty
           if [[ -z "$LINKED_SERVICE_NAME" ]]; then
               echo "Error: LINKED_SERVICE_NAME is empty" >&2

@@ -85,7 +85,7 @@ jobs:
             | .properties.typeProperties.connectionString.store.referenceName = if $origReference != "" then $origReference | sub("dev|qa|uat|prod"; $env; "g") else $origReference end' linkedService/"$LINKED_SERVICE_NAME".json)
 
             echo "Deploying Linked Service: $NEW_JSON"
-            linkedService1=$(cat NEW_JSON)
+            linkedService1=$(cat $NEW_JSON)
             # Construct JSON object correctly
             linkedServices=$(jq -n --arg linkedService1 "$linkedService1" \
             '[ 

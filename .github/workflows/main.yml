@@ -46,11 +46,12 @@ jobs:
       # - name: Deploy Pipelines in Order
       #   run: |
       #     for row in $(echo "$PIPELINES" | jq -c '.[]'); do
-        #       NEW_JSON=$(jq --arg env "$ENV_VAR" \
-        #   '(.name | sub("dev|qa|uat|prod"; $env; "g")) as $newName 
-        #   | (.properties.activities[].typeProperties.pipeline.referenceName | sub("dev|qa|uat|prod"; $env; "g")) as $newReference 
-        #   | .name = $newName 
-        #   | .properties.activities[].typeProperties.pipeline.referenceName = $newReference' pipeline/pipeline2-dev-kx.json)
+        #      NEW_JSON=$(jq --arg env "$ENV_VAR" \
+              # '(.name // "") as $origName
+              # | (.properties.activities[].typeProperties.pipeline.referenceName // "") as $origReference
+              # | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
+              # | .properties.activities[].typeProperties.pipeline.referenceName = if $origReference != "" then $origReference | sub("dev|qa|uat|prod"; $env; "g") else $origReference end' pipeline/"$PIPELINE_NAME".json)
+
 
         # echo "$NEW_JSON"
 
@@ -78,10 +79,10 @@ jobs:
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
 
             NEW_JSON=$(jq --arg env "$ENV_VAR" \
-              '(.name // "") as $origName
-              | (.properties.activities[].typeProperties.pipeline.referenceName // "") as $origReference
-              | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
-              | .properties.activities[].typeProperties.pipeline.referenceName = if $origReference != "" then $origReference | sub("dev|qa|uat|prod"; $env; "g") else $origReference end' pipeline/"$PIPELINE_NAME".json)
+            '(.name // "") as $origName
+            | (.properties.typeProperties.connectionString.store.referenceName // "") as $origReference
+            | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
+            | .properties.typeProperties.connectionString.store.referenceName = if $origReference != "" then $origReference | sub("dev|qa|uat|prod"; $env; "g") else $origReference end' linkedService/"$LINKED_SERVICE_NAME".json)
 
             echo "Deploying Linked Service: $NEW_JSON"
             linkedService1=$(cat NEW_JSON)

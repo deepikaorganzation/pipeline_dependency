@@ -65,28 +65,33 @@ jobs:
               --parameters factoryName=komatsu-test-poc pipelineName=$NEW_NAME
           done
 
+      - name: Extract Linked Service Order from JSON
+        id: get_linked_service_order
+        run: |
+          LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
+          echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+
       - name: Deploy Linked Services in Order
         run: |
-          linked_services='${{ env.LINKED_SERVICE_DEPENDENCIES }}'
-          deployed=()
-  
-          deploy_linked_service() {
-            local linked_service=$1
-            if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
-              echo "$linked_service already deployed."
-              return
-            fi
-            # Deploy dependencies first
-            for dep in $(echo $linked_services | jq -r ".[\"$linked_service\"][]"); do
-              deploy_linked_service $dep
-            done
-            echo "Deploying Linked Service: $linked_service..."
-            prop="$(cat linkedService/$linked_service.json)"
-            az datafactory linked-service create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --name $linked_service --properties "$(jq '.properties' <<< "$prop")"
-            deployed+=("$linked_service")
-          }
-  
-          for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
-            deploy_linked_service $linked_service
+          for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
+            LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
+            
+            # Modify the name dynamically based on the environment
+            NEW_NAME=$(jq -r --arg env "$ENV_VAR" --arg name "$LINKED_SERVICE_NAME" \
+              '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
+            linkedService1=$(cat ./linkedService/"$LINKED_SERVICE_NAME".json)
+            linkedServices=$(jq -n \
+            --arg linkedService1 "$linkedService1" \
+            '[ 
+              {
+                "name": $NEW_NAME, 
+                "definition": $linkedService1 | fromjson 
+              }
+            ]')
+            echo "Deploying Linked Service: $NEW_NAME"
+
+            az deployment group create \
+              --resource-group komatsu-poc \
+              --template-file linkedService.bicep \
+              --parameters factoryName=komatsu-test-poc linkedServices=$linkedServices
           done

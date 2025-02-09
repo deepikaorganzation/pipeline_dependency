@@ -8,7 +8,16 @@
         "name": "pipeline2",
         "dependsOn": ["pipeline1"]
       }
+    ],
+    "linkedService": [
+        {
+            "name": "AzureKeyVaultPOC",
+            "dependsOn": []
+          },
+          {
+            "name": "AzureBlobStoragePOC",
+            "dependsOn": ["AzureKeyVaultPOC"]
+          }
     ]
-    
     
 }

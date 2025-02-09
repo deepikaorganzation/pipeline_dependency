@@ -84,7 +84,7 @@ jobs:
             --arg linkedService1 "$linkedService1" \
             '[ 
               {
-                "name": "$NEW_NAME_LS", 
+                "name": $NEW_NAME_LS, 
                 "definition": $linkedService1 | fromjson  
               }
             ]')

@@ -76,7 +76,7 @@ jobs:
           echo "$LINKED_SERVICE_NAME"
           # Modify the name dynamically based on the environment
           NEW_NAME_LS=$(echo "$LINKED_SERVICE_NAME" | jq -r --arg env "$ENV_VAR" \
-              'sub("dev|qa|uat|prod"; $env; "g")')
+            --arg linkedService "$LINKED_SERVICE_NAME"  '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
           echo "$NEW_NAME_LS"
           # Ensure NEW_NAME_LS is not empty
           if [[ -z "$NEW_NAME_LS" ]]; then

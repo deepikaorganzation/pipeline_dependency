@@ -67,56 +67,55 @@ jobs:
       - name: Deploy Linked Services in Order
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
-          LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-          # Ensure LINKED_SERVICE_NAME is not empty
-          if [[ -z "$LINKED_SERVICE_NAME" ]]; then
-              echo "Error: LINKED_SERVICE_NAME is empty" >&2
-              exit 1
-          fi
-          echo "$LINKED_SERVICE_NAME"
-          # Modify the name dynamically based on the environment
-          NEW_NAME_LS=$(echo "$LINKED_SERVICE_NAME" | jq -r --arg env "$ENV_VAR" \
-            --arg linkedService "$LINKED_SERVICE_NAME"  '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
-          echo "$NEW_NAME_LS"
-          # Ensure NEW_NAME_LS is not empty
-          if [[ -z "$NEW_NAME_LS" ]]; then
-              echo "Error: NEW_NAME_LS is empty" >&2
-              exit 1
-          fi
+            LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
+            # Ensure LINKED_SERVICE_NAME is not empty
+            if [[ -z "$LINKED_SERVICE_NAME" ]]; then
+                echo "Error: LINKED_SERVICE_NAME is empty" >&2
+                exit 1
+            fi
+            echo "$LINKED_SERVICE_NAME"
+            # Modify the name dynamically based on the environment
+            NEW_NAME_LS=$(jq -r --arg env "$ENV_VAR" --arg linkedService "$LINKED_SERVICE_NAME"  '.name | sub("dev|qa|uat|prod"; $env; "g")' linkedService/"$LINKED_SERVICE_NAME".json)
+            echo "$NEW_NAME_LS"
+            # Ensure NEW_NAME_LS is not empty
+            if [[ -z "$NEW_NAME_LS" ]]; then
+                echo "Error: NEW_NAME_LS is empty" >&2
+                exit 1
+            fi
 
-          # Validate and read JSON file
-          if [[ ! -f "linkedService/$LINKED_SERVICE_NAME.json" ]]; then
-              echo "Error: linkedService/$LINKED_SERVICE_NAME.json file does not exist" >&2
-              exit 1
-          fi
+            # Validate and read JSON file
+            if [[ ! -f "linkedService/$LINKED_SERVICE_NAME.json" ]]; then
+                echo "Error: linkedService/$LINKED_SERVICE_NAME.json file does not exist" >&2
+                exit 1
+            fi
 
-          linkedService1=$(cat ./linkedService/$LINKED_SERVICE_NAME.json)
+            linkedService1=$(cat ./linkedService/$LINKED_SERVICE_NAME.json)
 
-          # Check if JSON parsing was successful
-          if [[ -z "$linkedService1" || "$linkedService1" == "null" ]]; then
-              echo "Error: linkedService1 JSON is empty or invalid" >&2
-              exit 1
-          fi
+            # Check if JSON parsing was successful
+            if [[ -z "$linkedService1" || "$linkedService1" == "null" ]]; then
+                echo "Error: linkedService1 JSON is empty or invalid" >&2
+                exit 1
+            fi
 
-          # Construct JSON object correctly
-          linkedServices=$(jq -n --arg definition "$linkedService1" \
-          '[ 
-            {
-              "name": $NEW_NAME_LS, 
-              "definition": $definition  
-            }
-          ]')
-          echo "$linkedServices"
-          # Ensure linkedServices is valid JSON
-          if [[ -z "$linkedServices" || "$linkedServices" == "null" ]]; then
-              echo "Error: linkedServices JSON is empty or invalid" >&2
-              exit 1
-          fi
+            # Construct JSON object correctly
+            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --arg definition "$linkedService1" \
+            '[ 
+              {
+                "name": $name, 
+                "definition": $definition  
+              }
+            ]')
+            echo "$linkedServices"
+            # Ensure linkedServices is valid JSON
+            if [[ -z "$linkedServices" || "$linkedServices" == "null" ]]; then
+                echo "Error: linkedServices JSON is empty or invalid" >&2
+                exit 1
+            fi
 
-          echo "Deploying Linked Service: $NEW_NAME_LS"
+            echo "Deploying Linked Service: $NEW_NAME_LS"
 
-          az deployment group create \
-            --resource-group komatsu-poc \
-            --template-file linkedService.bicep \
-            --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
+            az deployment group create \
+              --resource-group komatsu-poc \
+              --template-file linkedService.bicep \
+              --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
           done

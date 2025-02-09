@@ -73,11 +73,11 @@ jobs:
               echo "Error: LINKED_SERVICE_NAME is empty" >&2
               exit 1
           fi
-
+          echo "$LINKED_SERVICE_NAME"
           # Modify the name dynamically based on the environment
           NEW_NAME_LS=$(echo "$LINKED_SERVICE_NAME" | jq -r --arg env "$ENV_VAR" \
               'sub("dev|qa|uat|prod"; $env; "g")')
-
+          echo "$NEW_NAME_LS"
           # Ensure NEW_NAME_LS is not empty
           if [[ -z "$NEW_NAME_LS" ]]; then
               echo "Error: NEW_NAME_LS is empty" >&2
@@ -106,7 +106,7 @@ jobs:
               "definition": $definition  
             }
           ]')
-
+          echo "$linkedServices"
           # Ensure linkedServices is valid JSON
           if [[ -z "$linkedServices" || "$linkedServices" == "null" ]]; then
               echo "Error: linkedServices JSON is empty or invalid" >&2

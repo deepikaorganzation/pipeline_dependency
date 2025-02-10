@@ -1,0 +1,38 @@
+name: Versioning and Tagging
+
+on:
+  push:
+    branches:
+      - main
+    # This workflow will run for any push to dev, test, or main branches
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for tags
+
+      - name: Get latest tag and version increment
+        id: version
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+          VERSION=${LAST_TAG#v}
+          MAJOR=$(echo $VERSION | cut -d '.' -f 1)
+          MINOR=$(echo $VERSION | cut -d '.' -f 2)
+          PATCH=$(echo $VERSION | cut -d '.' -f 3)
+          # Main branch: Increment MINOR for new feature release
+          MINOR=$((MINOR + 1))
+          PATCH=0  # Reset PATCH for a new minor release
+          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"  
+          echo "New version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Create and push new version tag
+        run: |
+          git config --global user.email "dmj571999@gmail.com"
+          git config --global user.name "DMJ57"
+          git tag -a $NEW_VERSION -m "Release version $NEW_VERSION"
+          git push origin $NEW_VERSION

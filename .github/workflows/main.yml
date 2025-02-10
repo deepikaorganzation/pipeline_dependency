@@ -95,37 +95,15 @@ jobs:
         run: |
           LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
           echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
-          
-          echo "$LINKED_SERVICES"
 
       - name: Deploy Linked Services in Order
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
-            echo $LINKED_SERVICE_NAME
 
-            NEW_JSON=$(jq --arg env "$ENV_VAR" \
-            '(.name // "") as $origName
-            | .name = if $origName != "" then $origName | gsub("dev|qa|uat|prod"; $env) else $origName end
-            | (.. | select(.referenceName?) | .referenceName) |= gsub("dev|qa|uat|prod"; $env)
-            | . ' linkedService/"$LINKED_SERVICE_NAME".json)
-
-            # Debugging output for NEW_JSON
-            echo "NEW_JSON: $NEW_JSON"
-
-            # Validate if NEW_JSON is valid JSON
-            if echo "$NEW_JSON" | jq empty; then
-                echo "NEW_JSON is valid JSON"
-            else
-                echo "NEW_JSON is invalid"
-                exit 1
-            fi
-
-            # Extract the new name from NEW_JSON
-            NEW_NAME_LS=$(echo "$NEW_JSON" | jq -r '.name')
-
+            linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
             # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$NEW_JSON" \
+            linkedServices=$(jq -n --arg name "$LINKED_SERVICE_NAME" --argjson definition "$linkedServiceDefinition" \
               '[ 
                 {
                   "name": $name, 

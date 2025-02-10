@@ -103,15 +103,12 @@ jobs:
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
             echo $LINKED_SERVICE_NAME
-            
+
             NEW_JSON=$(jq --arg env "$ENV_VAR" \
             '(.name // "") as $origName
             | .name = if $origName != "" then $origName | gsub("dev|qa|uat|prod"; $env) else $origName end
-            | (.. | .referenceName? // empty) as $origReference
-            | if $origReference != "" then
-                (.. | select(.referenceName?) | .referenceName) |= gsub("dev|qa|uat|prod"; $env)
-              else
-                . end' linkedService/"$LINKED_SERVICE_NAME".json)
+            | (.. | select(.referenceName?) | .referenceName) |= gsub("dev|qa|uat|prod"; $env)
+            | . ' linkedService/"$LINKED_SERVICE_NAME".json)
 
             # Debugging output for NEW_JSON
             echo "NEW_JSON: $NEW_JSON"

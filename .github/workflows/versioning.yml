@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    # This workflow will run for any push to dev, test, or main branches
+    # This workflow will run for any push to dev, test, or main branches.
 
 jobs:
   versioning:

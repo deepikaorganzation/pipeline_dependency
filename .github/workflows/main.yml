@@ -110,7 +110,7 @@ jobs:
             | if $origReference != "" then
                 (.. | select(.referenceName?) | .referenceName) |= gsub("dev|qa|uat|prod"; $env)
               else
-                . end' linkedService/"$LINKED_SERVICE_NAME".json)
+                . end' linkedService/"$LINKED_SERVICE".json)
 
             # Debugging output for NEW_JSON
             echo "NEW_JSON: $NEW_JSON"

@@ -112,26 +112,37 @@ jobs:
               else
                 . end' linkedService/"$LINKED_SERVICE_NAME".json)
 
-            echo "Deploying Linked Service: $NEW_JSON"
+            # Debugging output for NEW_JSON
+            echo "NEW_JSON: $NEW_JSON"
+
+            # Validate if NEW_JSON is valid JSON
+            if echo "$NEW_JSON" | jq empty; then
+                echo "NEW_JSON is valid JSON"
+            else
+                echo "NEW_JSON is invalid"
+                exit 1
+            fi
 
             # Extract the new name from NEW_JSON
             NEW_NAME_LS=$(echo "$NEW_JSON" | jq -r '.name')
 
             # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$NEW_JSON" \
+            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --arg definition "$NEW_JSON" \
               '[ 
                 {
                   "name": $name, 
                   "definition": $definition
                 }
               ]')
+
             echo "$linkedServices"
-            
+
             az deployment group create \
               --resource-group komatsu-poc \
               --template-file linkedService.bicep \
               --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
-          done
+            done
+
 
 
         # for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do

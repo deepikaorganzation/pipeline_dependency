@@ -32,7 +32,5 @@ jobs:
 
       - name: Create and push new version tag
         run: |
-          git config --global user.email "deepika.jadhav@infosys.com"
-          git config --global user.name "deepikaorganization"
           git tag -a $NEW_VERSION -m "Release version $NEW_VERSION"
           git push origin $NEW_VERSION

@@ -125,7 +125,7 @@ jobs:
             NEW_NAME_LS=$(echo "$NEW_JSON" | jq -r '.name')
 
             # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --arg definition "$NEW_JSON" \
+            linkedServices=$(jq -n --arg name "$NEW_NAME_LS" --argjson definition "$NEW_JSON" \
               '[ 
                 {
                   "name": $name, 

@@ -104,13 +104,13 @@ jobs:
             LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
 
             NEW_JSON=$(jq --arg env "$ENV_VAR" \
-              '(.name // "") as $origName
-              | (.. | .referenceName? // empty) as $origReference
-              | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
-              | if $origReference != "" then
-                  (.. | select(.referenceName?)) |= (. = sub("dev|qa|uat|prod"; $env; "g"))
-                else
-                  . end' linkedService/"$LINKED_SERVICE_NAME".json)
+            '(.name // "") as $origName
+            | .name = if $origName != "" then $origName | gsub("dev|qa|uat|prod"; $env) else $origName end
+            | (.. | .referenceName? // empty) as $origReference
+            | if $origReference != "" then
+                (.. | select(.referenceName?) | .referenceName) |= gsub("dev|qa|uat|prod"; $env)
+              else
+                . end' linkedService/"$LINKED_SERVICE_NAME".json)
 
             echo "Deploying Linked Service: $NEW_JSON"
 

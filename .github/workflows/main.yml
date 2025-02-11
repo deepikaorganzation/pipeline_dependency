@@ -5,6 +5,17 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose environment to deploy'
+        required: true
+        default: 'Dev'
+        type: choice
+        options:
+          - dev
+          - qa
+          - uat
+          - prod
 
 jobs:
   deploy-adf:
@@ -42,7 +53,7 @@ jobs:
         run: |
           PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
-
+          echo $PIPELINES
       - name: Deploy Pipelines in Order
         run: |
           for row in $(echo "$PIPELINES" | jq -c '.[]'); do
@@ -95,7 +106,7 @@ jobs:
         run: |
           LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
           echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
-
+          echo $LINKED_SERVICES
       - name: Deploy Linked Services in Order
         run: |
           for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do

@@ -56,11 +56,12 @@ jobs:
           PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
           echo $PIPELINES
+      
       - name: Deploy Pipelines in Order
         run: |
           pipelines="$PIPELINES"  # Replace with the actual environment variable or input containing the dependency JSON
           deployed=()
-
+      
           # Function to deploy a pipeline recursively, ensuring dependencies are deployed first
           deploy_pipeline() {
             local pipeline=$1
@@ -73,15 +74,28 @@ jobs:
               deploy_pipeline $dep
             done
             echo "Deploying Pipeline: $pipeline..."
+            
+            # Get the pipeline name from the JSON file (ensure it’s correctly extracted)
+            pipeline_name=$(jq -r '.name' "pipeline/$pipeline.json")
+            
+            # Make sure that $pipeline_name is not empty
+            if [ -z "$pipeline_name" ]; then
+              echo "Error: Pipeline name is missing in pipeline/$pipeline.json"
+              exit 1
+            fi
+      
+            # Deploy the pipeline using the az datafactory command with the --name argument
             az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-              --template-file ./bicep/modules/pipeline.bicep "pipeline/$pipeline.json"
+              --name "$pipeline_name" --template-file ./bicep/modules/pipeline.bicep "pipeline/$pipeline.json"
+            
             deployed+=("$pipeline")
           }
-
+      
           # Loop through the pipelines and deploy each one, respecting dependencies
           for pipeline in $(echo $pipelines | jq -r 'keys[]'); do
             deploy_pipeline $pipeline
           done
+        
 
 
           # for row in $(echo "$PIPELINES" | jq -c '.[]'); do

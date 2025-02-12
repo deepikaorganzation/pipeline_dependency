@@ -20,7 +20,9 @@ on:
 jobs:
   deploy-adf:
     env:
-        ENV_VAR: "staging"
+        ENV_VAR: ${{github.event.inputs.environment}}
+        pipeline1: "kx-pipeline-${{github.event.inputs.environment}}-1"
+        pipeline2: "kx-pipeline-${{github.event.inputs.environment}}-2"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -56,79 +58,126 @@ jobs:
           echo $PIPELINES
       - name: Deploy Pipelines in Order
         run: |
-          for row in $(echo "$PIPELINES" | jq -c '.[]'); do
-            PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+          pipelines="$PIPELINES"  # Replace with the actual environment variable or input containing the dependency JSON
+          deployed=()
 
-            # Read and transform JSON
-            NEW_JSON=$(jq --arg env "$ENV_VAR" '
-              (.name // "") as $origName
-              | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
-              | (.properties.activities[]? | select(has("typeProperties")) | .typeProperties.pipeline.referenceName)? |= 
-                if . != null then sub("dev|qa|uat|prod"; $env; "g") else . end' pipeline/"$PIPELINE_NAME".json)
-
-            echo "Updated JSON: $NEW_JSON"
-
-            # Ensure NEW_JSON is valid JSON
-            if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then
-                echo "Error: NEW_JSON is empty or invalid" >&2
-                exit 1
+          # Function to deploy a pipeline recursively, ensuring dependencies are deployed first
+          deploy_pipeline() {
+            local pipeline=$1
+            if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
+              echo "$pipeline already deployed."
+              return
             fi
+            # Deploy dependencies first
+            for dep in $(echo $pipelines | jq -r ".[\"$pipeline\"].dependsOn[]"); do
+              deploy_pipeline $dep
+            done
+            echo "Deploying Pipeline: $pipeline..."
+            az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
+              --template-file ./bicep/modules/pipeline.bicep "pipeline/$pipeline.json"
+            deployed+=("$pipeline")
+          }
 
-            # Extract the new pipeline name
-            NEW_NAME_PL=$(echo "$NEW_JSON" | jq -r '.name')
-
-            # Construct JSON object correctly
-            pipeline=$(jq -n --arg name "$NEW_NAME_PL" --argjson definition "$NEW_JSON" '
-              [
-                {
-                  "name": $name, 
-                  "definition": $definition
-                }
-              ]')
-
-            echo "Final pipeline JSON: $pipeline"
-
-            # Ensure pipeline is valid JSON
-            if [[ -z "$pipeline" || "$pipeline" == "null" ]]; then
-                echo "Error: pipeline JSON is empty or invalid" >&2
-                exit 1
-            fi
-
-            az deployment group create \
-              --resource-group komatsu-poc \
-              --template-file pipeline.bicep \
-              --parameters factoryName=komatsu-test-poc pipelines="$pipeline"
+          # Loop through the pipelines and deploy each one, respecting dependencies
+          for pipeline in $(echo $pipelines | jq -r 'keys[]'); do
+            deploy_pipeline $pipeline
           done
+
+
+          # for row in $(echo "$PIPELINES" | jq -c '.[]'); do
+          #   PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+
+          #   # Read and transform JSON
+          #   NEW_JSON=$(jq --arg env "$ENV_VAR" '
+          #     (.properties.activities[]? | select(has("typeProperties")) | .typeProperties.pipeline.referenceName)? |= 
+          #       if . != null then sub("$PIPELINE_NAME"; "$pipeline1"; "g") else . end' pipeline/"$PIPELINE_NAME".json)
+
+          #   echo "Updated JSON: $NEW_JSON"
+
+          #   # Ensure NEW_JSON is valid JSON
+          #   if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then
+          #       echo "Error: NEW_JSON is empty or invalid" >&2
+          #       exit 1
+          #   fi
+
+
+          #   # Construct JSON object correctly
+          #   pipeline=$(jq -n --argjson definition "$NEW_JSON" '
+          #     [
+          #       {
+          #         "name": $pipeline1, 
+          #         "definition": $definition
+          #       }
+          #     ]')
+
+          #   echo "Final pipeline JSON: $pipeline"
+
+          #   # Ensure pipeline is valid JSON
+          #   if [[ -z "$pipeline" || "$pipeline" == "null" ]]; then
+          #       echo "Error: pipeline JSON is empty or invalid" >&2
+          #       exit 1
+          #   fi
+
+          #   az deployment group create \
+          #     --resource-group komatsu-poc \
+          #     --template-file pipeline.bicep \
+          #     --parameters factoryName=komatsu-test-poc pipelines="$pipeline"
+          # done
 
 
       - name: Extract Linked Service Order from JSON
         id: get_linked_service_order
         run: |
-          LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
-          echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
-          echo $LINKED_SERVICES
+          echo "LINKED_SERVICES_DEPENDENCIES=$(jq -c '.linkedServices' dependencies.json)" >> $GITHUB_ENV
+          # LINKED_SERVICES=$(jq -c '.linkedServices | sort_by(.dependsOn | length)' dependencies.json)
+          # echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+          echo $LINKED_SERVICES_DEPENDENCIES
+
       - name: Deploy Linked Services in Order
         run: |
-          for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
-            LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
+          linked_services="$LINKED_SERVICES_DEPENDENCIES"
+          deployed=()
 
-            linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
-            # Construct JSON object correctly
-            linkedServices=$(jq -n --arg name "$LINKED_SERVICE_NAME" --argjson definition "$linkedServiceDefinition" \
-              '[ 
-                {
-                  "name": $name, 
-                  "definition": $definition
-                }
-              ]')
-
-            echo "$linkedServices"
-
-            az deployment group create \
-              --resource-group komatsu-poc \
-              --template-file linkedService.bicep \
-              --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
+          deploy_linked_service() {
+            local linked_service=$1
+            if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
+              echo "$linked_service already deployed."
+              return
+            fi
+            
+            for dep in $(echo $linked_services | jq -r ".[\"$linked_service\"][]"); do
+              deploy_linked_service $dep
             done
+            echo "Deploying Linked Service: $linked_service..."
+            az datafactory linked-service create --factory-name komatsu-test-poc --resource-group komatsu-poc \
+              --template-file ./bicep/modules/linkedService.bicep  "linkedService/$linked_service.json"
+            deployed+=("$linked_service")
+          }
+          for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
+            deploy_linked_service $linked_service
+          done
+
+
+          # for row in $(echo "$LINKED_SERVICES" | jq -c '.[]'); do
+          #   LINKED_SERVICE_NAME=$(echo "$row" | jq -r '.name')
+
+          #   linkedServiceDefinition=$(jq -c '{properties: .properties}' linkedService/"$LINKED_SERVICE_NAME".json)
+          #   # Construct JSON object correctly
+          #   linkedServices=$(jq -n --arg name "$LINKED_SERVICE_NAME" --argjson definition "$linkedServiceDefinition" \
+          #     '[ 
+          #       {
+          #         "name": $name, 
+          #         "definition": $definition
+          #       }
+          #     ]')
+
+          #   echo "$linkedServices"
+
+          #   az deployment group create \
+          #     --resource-group komatsu-poc \
+          #     --template-file linkedService.bicep \
+          #     --parameters adfName=komatsu-test-poc linkedServices="$linkedServices"
+          #   done
 
 
 

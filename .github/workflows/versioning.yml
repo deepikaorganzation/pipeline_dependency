@@ -3,7 +3,7 @@ name: Versioning and Tagging
 on:
   push:
     branches:
-      - main
+      - dev
     # This workflow will run for any push to dev, test, or main branches.
 permissions:
   contents: write

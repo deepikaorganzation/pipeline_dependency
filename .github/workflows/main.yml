@@ -137,15 +137,24 @@ jobs:
           #     --template-file pipeline.bicep \
           #     --parameters factoryName=komatsu-test-poc pipelines="$pipeline"
           # done
-
-
+      - name: Check dependencies.json contents
+        run: |
+            cat ./dependencies.json  # Check the contents of the JSON file
+        
       - name: Extract Linked Service Order from JSON
         id: get_linked_service_order
         run: |
-          echo "LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)" >> $GITHUB_ENV
-          echo "PIPELINES=$(jq -c '.pipelines' ./dependencies.json)" >> $GITHUB_ENV
+          # Fetch and print the linkedServices and pipelines objects as JSON
+          LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)
+          PIPELINES=$(jq -c '.pipelines' ./dependencies.json)
+      
+          # Print to debug
           echo "LINKED_SERVICES: $LINKED_SERVICES"
           echo "PIPELINES: $PIPELINES"
+      
+          # Set them as environment variables (print for debugging)
+          echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
         
       - name: Deploy Linked Services in Order
         run: |

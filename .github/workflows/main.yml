@@ -160,7 +160,7 @@ jobs:
             fi
       
             # Deploy dependencies first
-            for dep in $(echo $linked_services | jq -r ".[] | select(.name == \"$linked_service\") | .dependsOn[]"); do
+            for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
               deploy_linked_service $dep
             done
       
@@ -171,10 +171,12 @@ jobs:
               --resource-group komatsu-poc \
               --name "$linked_service" \
               --properties "@linkedService/$linked_service.json"
+            
             deployed+=("$linked_service")
           }
       
-          for linked_service in $(echo $linked_services | jq -r '.[].name'); do
+          # Iterate through each linked service in the linkedServices object
+          for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
             deploy_linked_service $linked_service
           done
         

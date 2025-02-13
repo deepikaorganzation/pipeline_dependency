@@ -183,7 +183,7 @@ jobs:
               --factory-name komatsu-test-poc \
               --resource-group komatsu-poc \
               --name "$linked_service" \
-              --properties "@$linked_service_json"
+              --properties "$linked_service_json"
             
             deployed+=("$linked_service")
           }

@@ -7,7 +7,7 @@
         "connectionString": {
           "type": "AzureKeyVaultSecret",
           "store": {
-            "referenceName": "AzureKeyVault-dev-POC",
+            "referenceName": "AzureKeyVaultPOC",
             "type": "LinkedServiceReference"
           },
           "secretName": "test1"

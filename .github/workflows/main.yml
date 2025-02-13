@@ -142,10 +142,10 @@ jobs:
       - name: Extract Linked Service Order from JSON
         id: get_linked_service_order
         run: |
-          echo "LINKED_SERVICES=$(jq -c '.linkedServices' ../dependencies.json)" >> $GITHUB_ENV
-          echo "PIPELINES=$(jq -c '.pipelines' ../dependencies.json)" >> $GITHUB_ENV
+          echo "LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)" >> $GITHUB_ENV
+          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
           echo "LINKED_SERVICES: $LINKED_SERVICES"
-          echo "PIPELINES: $PIPELINES"
+          echo "PIPELINES: $PIPELINES" >> $GITHUB_ENV
         
       - name: Deploy Linked Services in Order
         run: |

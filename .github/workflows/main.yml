@@ -174,7 +174,7 @@ jobs:
             done
 
             # Ensure the linked service JSON file exists and contains valid properties
-            linked_service_json=$(jq -c '.properties linkedService/$linked_service.json)
+            linked_service_json=$(jq -c '.properties' linkedService/$linked_service.json)
             if [[ ! -f "$linked_service_json" ]]; then
               echo "Error: Linked service JSON file not found for $linked_service"
               return

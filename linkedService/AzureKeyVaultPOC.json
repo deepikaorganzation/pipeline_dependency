@@ -1,5 +1,5 @@
 {
-    "name": "AzureKeyVault-dev-POC",
+    "name": "AzureKeyVaultPOC",
     "properties": {
         "annotations": [],
         "type": "AzureKeyVault",

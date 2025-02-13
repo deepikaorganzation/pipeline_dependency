@@ -1,5 +1,5 @@
 {
-    "name": "AzureBlobStorage-dev-POC",
+    "name": "AzureBlobStoragePOC",
     "properties": {
       "annotations": [],
       "type": "AzureBlobStorage",

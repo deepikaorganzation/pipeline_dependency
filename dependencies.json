@@ -1,12 +1,12 @@
 {
     "pipelines": [
       {
-        "name": "pipeline1",
+        "name": "pipeline1-dev-kx",
         "dependsOn": []
       },
       {
-        "name": "pipeline2",
-        "dependsOn": ["pipeline1"]
+        "name": "pipeline2-dev-kx",
+        "dependsOn": ["pipeline1-dev-kx"]
       }
     ],
     "linkedServices": [

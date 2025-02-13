@@ -160,30 +160,37 @@ jobs:
         run: |
           linked_services="$LINKED_SERVICES"
           deployed=()
-      
+
           deploy_linked_service() {
             local linked_service=$1
             if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
               echo "$linked_service already deployed."
               return
             fi
-      
+
             # Deploy dependencies first
             for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
               deploy_linked_service $dep
             done
-      
+
+            # Ensure the linked service JSON file exists and contains valid properties
+            linked_service_json="linkedService/$linked_service.json"
+            if [[ ! -f "$linked_service_json" ]]; then
+              echo "Error: Linked service JSON file not found for $linked_service"
+              return
+            fi
+
             # Deploy the linked service
             echo "Deploying Linked Service: $linked_service..."
             az datafactory linked-service create \
               --factory-name komatsu-test-poc \
               --resource-group komatsu-poc \
               --name "$linked_service" \
-              --properties "@linkedService/$linked_service.json"
+              --properties "@$linked_service_json"
             
             deployed+=("$linked_service")
           }
-      
+
           # Iterate through each linked service in the linkedServices object
           for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
             deploy_linked_service $linked_service

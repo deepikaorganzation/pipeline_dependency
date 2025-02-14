@@ -214,5 +214,14 @@ jobs:
             echo "Deploying Pipeline: $pipeline..."
             az datafactory pipeline create \
               --factory-name komatsu-test-poc \
-              --resource-group komats
+              --resource-group komatsu-poc \
+              --name "$pipeline" \
+              --properties "@pipeline/$pipeline.json"
+            deployed+=("$pipeline")
+          }
+
+          for pipeline in $(echo $pipelines | jq -r '.[].name'); do
+            deploy_pipeline $pipeline
+          done
+
         

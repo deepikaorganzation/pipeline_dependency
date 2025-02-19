@@ -3,13 +3,13 @@ name: Deploy ADF Pipelines
 on:
   push:
     branches:
-      - main
+      - main  
   workflow_dispatch:
     inputs:
       environment:
         description: 'Choose environment to deploy'
         required: true
-        default: 'Dev'
+        default: dev
         type: choice
         options:
           - dev
@@ -49,6 +49,17 @@ jobs:
             --resource-group komatsu-poc \
             --template-file main.bicep \
             --parameters adfName=komatsu-test-poc
+
+    test:
+      needs: deploy-ADF
+      uses: ./.github/workflows/linkedservice.yml
+      with: 
+        environment: ${{ github.event.inputs.environment }}
+      secrets:
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       # - name: Extract Pipeline Order from JSON
       #   id: get_pipeline_order

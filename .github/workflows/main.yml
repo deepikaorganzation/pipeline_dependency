@@ -19,6 +19,7 @@ on:
 
 jobs:
   deploy-adf:
+    environment: ${{github.event.inputs.environment}}
     env:
         ENV_VAR: ${{github.event.inputs.environment}}
         pipeline1: "kx-pipeline-${{github.event.inputs.environment}}-1"

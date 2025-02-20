@@ -36,7 +36,7 @@ jobs:
         echo ${{ secrets.AZURE_CLIENT_SECRET }}
         echo ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         echo ${{ secrets.AZURE_TENANT_ID }}
-        echo ${{ github.env.TESTEV}}
+        echo ${{ env.TESTEV}}
 
     - name: Log in to Azure
       uses: azure/login@v2

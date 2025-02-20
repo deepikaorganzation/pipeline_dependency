@@ -1,0 +1,61 @@
+
+{
+    "pipelines": [
+      {
+        "name": "kom-copyAzureBlobToAdobeComSFTP-dev-pipe",
+        "dependsOn": []
+      },
+      {
+        "name": "kom-pimAzureBlobPartsAssetImgMedia-dev-pipe",
+        "dependsOn": []
+      },
+      {
+        "name": "kom-pimAzureBlobPartsAssetImgMetadata-dev-pipe",
+        "dependsOn": []
+      },
+      {
+        "name": "kom-pimAdobeExport-dev-pipe",
+        "dependsOn": ["kom-copyAzureBlobToAdobeComSFTP-dev-pipe"]
+      },
+      {
+        "name": "kom-pimAdobeExportResubmit-dev-pipe",
+        "dependsOn": ["kom-copyAzureBlobToAdobeComSFTP-dev-pipe"]
+      }
+      ,
+      {
+        "name": "kom-pimAzureBlobPartsAssetImgControl-dev-pipe",
+        "dependsOn": ["kom-pimAzureBlobPartsAssetImgMetadata-dev-pipe", "kom-pimAzureBlobPartsAssetImgMedia-dev-pipe"]
+      }
+    ],
+    "linkedServices": [
+        {
+            "name": "lsAzureKeyVault",
+            "dependsOn": []
+        },
+        {
+            "name": "lsAzureBlobStorage",
+            "dependsOn": ["lsAzureKeyVault"]
+        },
+        {
+            "name": "lsAzureTableStorage",
+            "dependsOn": []
+        },
+        {
+            "name": "lsAwsS3_PIM_Adobe_Export",
+            "dependsOn": ["lsAzureKeyVault"]
+        },
+        {
+            "name": "lsSftp_PIM_Adobe_Export",
+            "dependsOn": ["lsAzureKeyVault"]
+        },
+        {
+          "name": "lsAwsS3_PIM_Adobe_Export_qa",
+          "dependsOn": ["lsAzureKeyVault"]
+        },
+        {
+          "name": "lsSftp_PIM_Adobe_Export_qa",
+          "dependsOn": ["lsAzureKeyVault"]
+        }
+    ]
+    
+}

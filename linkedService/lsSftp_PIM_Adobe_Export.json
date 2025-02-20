@@ -1,0 +1,23 @@
+{
+	"name": "lsSftp_PIM_Adobe_Export",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "ssh.us-a1.magento.cloud",
+			"port": 22,
+			"skipHostKeyValidation": true,
+			"authenticationType": "SshPublicKey",
+			"userName": "fgb4bn736tu3u-integration-5ojmyuq--mymagento",
+			"privateKeyContent": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "lsAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "pimfeed-com-sftp-key"
+			}
+		}
+	}
+}

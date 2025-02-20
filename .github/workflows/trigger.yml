@@ -1,0 +1,112 @@
+name: Deploy ADF Trigger
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+
+env: 
+  adfName: $(jq -r ".adfName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
+  resourceGroupName: $(jq -r ".resourceGroupName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Azure
+      uses: azure/login@v2
+      with:
+        creds: >
+              {
+                "clientId":"${{ secrets.AZURE_CLIENT_ID }}",
+                "clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}",
+                "subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+                "tenantId":"${{ secrets.AZURE_TENANT_ID }}"
+              }
+        enable-AzPSSession: true  # Make sure to store your Azure credentials as secrets
+
+    - name: Read Trigger JSON files and deploy
+      run: |
+          # Ensure the correct path to the JSON files
+          TestTrigger1=$(cat ./trigger/triggerEvtPIMAdobeExportMachineAttributesResubmit.json)
+          TestTrigger2=$(cat ./trigger/triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit.json)
+          TestTrigger3=$(cat ./trigger/triggerEvtPIMAdobeExportPartsResubmit.json)
+          TestTrigger4=$(cat ./trigger/triggerEvtPIMAdobeExportSalesHierarchyResubmit.json)
+          TestTrigger5=$(cat ./trigger/triggerSchPIMAdobeExportMachineAttributes.json)
+          TestTrigger6=$(cat ./trigger/triggerSchPIMAdobeExportMachineStructureHierarchy.json)
+          TestTrigger7=$(cat ./trigger/triggerSchPIMAdobeExportParts.json)
+          TestTrigger8=$(cat ./trigger/triggerSchPIMAdobeExportSalesHierarchy.json)
+          TestTrigger9=$(cat ./trigger/triggerSchPIMAzureBlobPartsAssetImg.json)
+
+          # Construct a JSON array with the Trigger contents
+          TestTrigger=$(jq -n \
+            --arg TestTrigger1 "$TestTrigger1" \
+            --arg TestTrigger2 "$TestTrigger2" \
+            --arg TestTrigger3 "$TestTrigger3" \
+            --arg TestTrigger4 "$TestTrigger4" \
+            --arg TestTrigger5 "$TestTrigger5" \
+            --arg TestTrigger6 "$TestTrigger6" \
+            --arg TestTrigger7 "$TestTrigger7" \
+            --arg TestTrigger8 "$TestTrigger8" \
+            --arg TestTrigger9 "$TestTrigger9" \
+            '[
+              {
+                "name": "triggerEvtPIMAdobeExportMachineAttributesResubmit",
+                "definition": $TestTrigger1 | fromjson
+              },
+              {
+                "name": "triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit",
+                "definition": $TestTrigger2 | fromjson
+              },
+              {
+                "name": "triggerEvtPIMAdobeExportPartsResubmit",
+                "definition": $TestTrigger3 | fromjson
+              },
+              {
+                "name": "triggerEvtPIMAdobeExportSalesHierarchyResubmit",
+                "definition": $TestTrigger4 | fromjson
+              },
+              {
+                "name": "triggerSchPIMAdobeExportMachineAttributes",
+                "definition": $TestTrigger5 | fromjson
+              },
+              {
+                "name": "triggerSchPIMAdobeExportMachineStructureHierarchy",
+                "definition": $TestTrigger6 | fromjson
+              },
+              {
+                "name": "triggerSchPIMAdobeExportParts",
+                "definition": $TestTrigger7 | fromjson
+              },
+              {
+                "name": "triggerSchPIMAdobeExportSalesHierarchy",
+                "definition": $TestTrigger8 | fromjson
+              },
+              {
+                "name": "triggerSchPIMAzureBlobPartsAssetImg",
+                "definition": $TestTrigger9 | fromjson
+              }
+            ]')
+
+          # Deploy using Bicep (or ARM template)
+          az deployment group create \
+            --resource-group ${{ env.resourceGroupName }} \
+            --template-file ./bicep/modules/trigger.bicep \
+            --parameters dataFactoryName=${{ env.adfName }} \
+            --parameters triggers="$TestTrigger"

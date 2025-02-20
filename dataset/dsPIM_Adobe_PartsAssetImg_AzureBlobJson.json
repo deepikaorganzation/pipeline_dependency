@@ -1,0 +1,109 @@
+{
+	"name": "dsPIM_Adobe_PartsAssetImg_AzureBlobJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAzureBlobStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dsAzureBlobContainer": {
+				"type": "string"
+			},
+			"dsAzureBlobPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().dsAzureBlobPath",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().dsAzureBlobContainer",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"partNumber": {
+					"type": "string"
+				},
+				"businessUnit": {
+					"type": "string"
+				},
+				"longDescription": {
+					"type": "string"
+				},
+				"salesHierarchy": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"salesHierarchyLevel1Identifier": {
+								"type": "string"
+							},
+							"salesHierarchyLevel1Description": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"images": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string"
+							},
+							"sequence": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"attachments": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string"
+							},
+							"language": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"SDSDocumentURL": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"URL": {
+								"type": "string"
+							},
+							"language": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

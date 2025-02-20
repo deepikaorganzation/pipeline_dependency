@@ -1,0 +1,16 @@
+{
+	"name": "lsSftp_PIM_Adobe_Export_qa",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "Sftp",
+		"typeProperties": {
+			"host": "1.fgb4bn736tu3u.2.dev.ent.magento.cloud",
+			"port": "2222",
+			"skipHostKeyValidation": true,
+			"authenticationType": "SshPublicKey",
+			"userName": "sftp-service-account",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDlEMTNGOTRDLTc2N0YtNDM3Qy1CRjg4LUY3M0FFQTQ3MUM4QV8wMzkwNDgzNy1jMWUxLTRhMzgtOWI3YS1jYmZkNmI1Mjk1YTUiDQp9"
+		}
+	}
+}

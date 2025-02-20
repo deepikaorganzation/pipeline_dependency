@@ -1,0 +1,31 @@
+{
+	"name": "triggerSchPIMAdobeExportParts",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "kom-pimAdobeExport-dev-pipe",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"awsS3SourceFileName": "PIM-Commerce-Parts-Data",
+					"awsS3SourceFilePath": "qa/P360Server/export/PIM_Adobe_Export/",
+					"awsS3SourceBucketName": "pim-komatsu-bucket",
+					"azureStorageBlobFilePath": "from_pim/parts/",
+					"transactionName": "Parts Feed"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 1,
+				"startTime": "2024-12-09T13:24:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

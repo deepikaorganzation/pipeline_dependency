@@ -1,0 +1,34 @@
+{
+	"name": "dsPIM_Adobe_PartsAssetImg_PIMJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAwsS3_PIM_Adobe_Export_qa",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"awsS3SourceBucketName": {
+				"type": "string"
+			},
+			"awsS3SourceFilePath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AmazonS3Location",
+				"bucketName": {
+					"value": "@dataset().awsS3SourceBucketName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().awsS3SourceFilePath",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

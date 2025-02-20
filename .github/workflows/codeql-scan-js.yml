@@ -1,0 +1,48 @@
+name: "CodeQL JS Scan"
+on:
+  pull_request:
+    branches:
+    - master
+    - develop
+    - release/*
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql_js:
+    name: CodeQL JavaScript
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+      issues: read
+      checks: write
+      pull-requests: write
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+  
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - uses: github/codeql-action/init@v3
+        with:
+          config-file: ./.github/codeql/codeql-js.yml
+          languages: javascript-typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

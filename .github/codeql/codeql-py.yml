@@ -1,0 +1,4 @@
+name: "CodeQL Python"
+paths:
+  - .
+paths-ignore:

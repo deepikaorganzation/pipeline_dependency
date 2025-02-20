@@ -1,0 +1,28 @@
+{
+	"name": "lsAwsS3_PIM_Adobe_Export",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AmazonS3",
+		"typeProperties": {
+			"serviceUrl": "https://s3.amazonaws.com",
+			"accessKeyId": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "lsAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "pimfeed-pim-awss3-accesskeyid"
+			},
+			"secretAccessKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "lsAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "pimfeed-pim-awss3-secretaccesskey"
+			},
+			"authenticationType": "AccessKey"
+		}
+	}
+}

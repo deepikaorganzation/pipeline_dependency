@@ -1,0 +1,16 @@
+{
+	"name": "dsPIM_Adobe_PartsAssetImg_AzureTable03",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAzureTableStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "komkxintdataeusdevdltable03"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

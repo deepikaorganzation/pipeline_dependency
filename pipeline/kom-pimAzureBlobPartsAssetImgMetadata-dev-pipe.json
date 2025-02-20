@@ -1,0 +1,654 @@
+{
+	"name": "kom-pimAzureBlobPartsAssetImgMetadata-dev-pipe",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data_flow",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Setvariable_BatchId",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "FileName",
+						"value": "@pipeline().parameters.metadataFileName"
+					},
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Execute DataFlow dfSplitMetadataJson to Split the Metadata File"
+					}
+				],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dflow_SplitPimAdamPartsMediaExportMetadata",
+						"type": "DataFlowReference",
+						"parameters": {
+							"metadataFileName": {
+								"value": "'@{pipeline().parameters.metadataFileName}'",
+								"type": "Expression"
+							},
+							"metadataBlobPath": {
+								"value": "'@{pipeline().parameters.inboundMetadataBlobPath}'",
+								"type": "Expression"
+							},
+							"batchId": {
+								"value": "'@{variables('batchId')}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"sourceReadMetadataJson": {
+								"dsAzureBlobContainer": {
+									"value": "@pipeline().parameters.inboundBlobContainer",
+									"type": "Expression"
+								},
+								"dsAzureBlobPath": {
+									"value": "@pipeline().parameters.inboundMetadataBlobPath",
+									"type": "Expression"
+								}
+							},
+							"sinkWriteToBlobContainer": {
+								"dsAzureBlobContainer": {
+									"value": "@pipeline().parameters.inboundBlobContainer",
+									"type": "Expression"
+								},
+								"dsAzureBlobPath": {
+									"value": "@pipeline().parameters.inboundMetadataPartsBlobPath",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 16,
+						"computeType": "General"
+					},
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
+				}
+			},
+			{
+				"name": "Setvariable_ErrorThresholdCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Data_flow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Set ErrorThresholdCount"
+					}
+				],
+				"typeProperties": {
+					"variableName": "errorThresholdCount",
+					"value": {
+						"value": "@if(less(div(activity('Data_flow').output.runStatus.output.sinkOutput.value[0].Total_Count, 10), 0.5), 1, add(div(activity('Data_flow').output.runStatus.output.sinkOutput.value[0].Total_Count, 10), if(greater(mod(div(activity('Data_flow').output.runStatus.output.sinkOutput.value[0].Total_Count, 10), 1), 0), 1, 0)))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Insert_To_Table_BatchRunInfo",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "FileName",
+						"value": "@pipeline().parameters.metadataFileName"
+					},
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Insert records into PartsAssetBatchRunInfo"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "total_parts_count",
+								"value": {
+									"value": "@variables('totalPartsCount')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "error_threshold_count",
+								"value": {
+									"value": "@variables('errorThresholdCount')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runStatus",
+								"value": "0"
+							},
+							{
+								"name": "fileName",
+								"value": {
+									"value": "@pipeline().parameters.metadataFileName",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "partitionKey",
+								"value": {
+									"value": "@variables('batchId')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "rowKey",
+								"value": {
+									"value": "@variables('batchId')",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": false,
+							"wildcardFolderPath": "dummy",
+							"wildcardFileName": "Dummy.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureTableSink",
+						"azureTableInsertType": "merge",
+						"azureTablePartitionKeyName": "PartitionKey",
+						"azureTableRowKeyName": "RowKey",
+						"writeBatchSize": 10000
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['total_parts_count']"
+								},
+								"sink": {
+									"name": "total_parts_count",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['error_threshold_count']"
+								},
+								"sink": {
+									"name": "threshold_data_error_count",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['runStatus']"
+								},
+								"sink": {
+									"name": "runstatus",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fileName']"
+								},
+								"sink": {
+									"name": "filename",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['partitionKey']"
+								},
+								"sink": {
+									"name": "PartitionKey",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['rowKey']"
+								},
+								"sink": {
+									"name": "RowKey",
+									"type": "String"
+								}
+							}
+						],
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlobJson",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": "pim-to-adobe",
+							"dsAzureBlobPath": "dummy"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureTable02",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Setvariable_BatchId",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "FileName",
+						"value": "@pipeline().parameters.metadataFileName"
+					},
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Generate Unique BatchId"
+					}
+				],
+				"typeProperties": {
+					"variableName": "batchId",
+					"value": {
+						"value": "@guid()",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Setvariable_TotalPartsCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Data_flow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Set TotalPartsCount"
+					}
+				],
+				"typeProperties": {
+					"variableName": "totalPartsCount",
+					"value": {
+						"value": "@length(activity('Data_flow').output.runStatus.output.sinkOutput.value[0].partNumbers)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Setvariable_ErrorThresholdCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Setvariable_TotalPartsCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Loop through the Items received from DataFlow"
+					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Data_flow').output.runStatus.output.sinkOutput.value[0].partNumbers",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Insert_To_Table_PartsRunInfo",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Transaction",
+									"value": "partsassetimg"
+								},
+								{
+									"name": "SourceSystem",
+									"value": "pim"
+								},
+								{
+									"name": "TargetSystem",
+									"value": "aem"
+								},
+								{
+									"name": "CustomMessage",
+									"value": "Insert records into PartsAssetPartRunInfo table"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"additionalColumns": [
+										{
+											"name": "part_processing_status",
+											"value": {
+												"value": "@string(0)",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "partitionKey",
+											"value": {
+												"value": "@variables('batchId')",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "rowKey",
+											"value": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "assets_count",
+											"value": {
+												"value": "@activity('Data_flow').output.runStatus.output.sinkOutput.value[0].Total_Count",
+												"type": "Expression"
+											}
+										},
+										{
+											"name": "failure_data_count",
+											"value": "0"
+										},
+										{
+											"name": "success_assets_uploaded_count",
+											"value": "0"
+										},
+										{
+											"name": "success_metadata_send_count",
+											"value": "0"
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": false,
+										"wildcardFolderPath": "dummy",
+										"wildcardFileName": "Dummy.json",
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureTableSink",
+									"azureTableInsertType": "merge",
+									"azureTablePartitionKeyName": "PartitionKey",
+									"azureTableRowKeyName": "RowKey",
+									"writeBatchSize": 10000
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['part_processing_status']"
+											},
+											"sink": {
+												"name": "part_processing_status",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['partitionKey']"
+											},
+											"sink": {
+												"name": "PartitionKey",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['rowKey']"
+											},
+											"sink": {
+												"name": "RowKey",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['assets_count']"
+											},
+											"sink": {
+												"name": "assets_count",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['failure_data_count']"
+											},
+											"sink": {
+												"name": "failure_data_count",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['success_assets_uploaded_count']"
+											},
+											"sink": {
+												"name": "success_assets_uploaded_count",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['success_metadata_send_count']"
+											},
+											"sink": {
+												"name": "success_metadata_send_count",
+												"type": "Int32"
+											}
+										}
+									],
+									"mapComplexValuesToString": false
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlobJson",
+									"type": "DatasetReference",
+									"parameters": {
+										"dsAzureBlobContainer": "pim-to-adobe",
+										"dsAzureBlobPath": "dummy"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureTable03",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"inboundBlobContainer": {
+				"type": "string"
+			},
+			"inboundMetadataBlobPath": {
+				"type": "string"
+			},
+			"inboundMetadataPartsBlobPath": {
+				"type": "string"
+			},
+			"metadataFileName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"errorThresholdCount": {
+				"type": "Integer"
+			},
+			"batchId": {
+				"type": "String"
+			},
+			"totalPartsCount": {
+				"type": "Integer"
+			},
+			"JSON_msg": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-01-16T12:48:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

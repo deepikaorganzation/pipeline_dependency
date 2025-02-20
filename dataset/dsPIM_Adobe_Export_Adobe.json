@@ -1,0 +1,18 @@
+{
+	"name": "dsPIM_Adobe_Export_Adobe",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsSftp_PIM_Adobe_Export_qa",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "SftpLocation"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

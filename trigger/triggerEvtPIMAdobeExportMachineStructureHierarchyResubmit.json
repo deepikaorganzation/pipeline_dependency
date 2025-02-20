@@ -1,0 +1,31 @@
+{
+	"name": "triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "kom-pimAdobeExportResubmit-dev-pipe",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"azureStorageBlobFilePath": "to_com/machinestructurehierarchy/",
+					"retriggerAzureStorageBlobFileName": "@triggerBody().fileName",
+					"retriggerAzureStorageBlobFilePath": "@triggerBody().folderPath",
+					"transactionName": "Machine Structure Hierarchy Feed",
+					"flowName": "Machine_Structure&GroupFeatures"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/retrigger/blobs/to_com/machinestructurehierarchy/",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/7f07baf7-8bba-4b88-b300-74ba5b15f52d/resourceGroups/kac_KX_Integrations_Dev_rg/providers/Microsoft.Storage/storageAccounts/komkxintdataeusdevdl",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

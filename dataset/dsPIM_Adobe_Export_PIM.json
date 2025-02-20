@@ -1,0 +1,44 @@
+{
+	"name": "dsPIM_Adobe_Export_PIM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lsAwsS3_PIM_Adobe_Export_qa",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dsAwsS3BucketName": {
+				"type": "string"
+			},
+			"dsAwsS3FilePath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AmazonS3Location",
+				"bucketName": {
+					"value": "@dataset().dsAwsS3BucketName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().dsAwsS3FilePath",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"customername": {
+					"type": "string"
+				},
+				"customerid": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

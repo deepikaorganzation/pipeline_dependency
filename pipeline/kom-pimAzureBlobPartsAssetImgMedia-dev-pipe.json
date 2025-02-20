@@ -1,0 +1,1252 @@
+{
+	"name": "kom-pimAzureBlobPartsAssetImgMedia-dev-pipe",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_UnzipTheZipFiles",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "FileName",
+						"value": "@pipeline().parameters.zipFileName"
+					},
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Unzip the file to Media Folder"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"maxConcurrentConnections": 10,
+							"recursive": false,
+							"wildcardFolderPath": {
+								"value": "@pipeline().parameters.zipBlobPath",
+								"type": "Expression"
+							},
+							"wildcardFileName": {
+								"value": "@pipeline().parameters.zipFileName",
+								"type": "Expression"
+							},
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings",
+							"compressionProperties": {
+								"type": "ZipDeflateReadSettings"
+							}
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"maxConcurrentConnections": 10,
+							"copyBehavior": "PreserveHierarchy"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": 10
+				},
+				"inputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlobUnzip",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.zipBlobPath",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.unzipBlobPath",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy_Jpg_Images",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_UnzipTheZipFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Copy the JPG Images"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"maxConcurrentConnections": 10,
+							"recursive": false,
+							"wildcardFolderPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.jpg",
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"maxConcurrentConnections": 10
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.imageBlobPath",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy Attachments",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_UnzipTheZipFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Copy the Attachments"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"maxConcurrentConnections": 10,
+							"recursive": false,
+							"wildcardFolderPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.pdf",
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"maxConcurrentConnections": 10
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.attachmentBlobPath",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy_Png_Images",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy_UnzipTheZipFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 3,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Copy the Png Images"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"maxConcurrentConnections": 10,
+							"recursive": false,
+							"wildcardFolderPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.png",
+							"deleteFilesAfterCompletion": false
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"maxConcurrentConnections": 10
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.imageBlobPath",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Get_Metadata_Unzip_Blob",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Copy_UnzipTheZipFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Get MetaDta of Unzipped Files"
+					}
+				],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@pipeline().globalParameters.inboundAzureStorageContainer",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@concat(pipeline().parameters.unzipBlobPath,'/',pipeline().parameters.zipFileName)",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Filter_HTML_Zip_Files",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Get_Metadata_Unzip_Blob",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Filter Html Zip File names from Metadata"
+					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get_Metadata_Unzip_Blob').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@and(endswith(toUpper(item().name),'.ZIP'),equals(item().type,'Folder'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEach_HTML_ZipFiles",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter_HTML_Zip_Files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Loop through the List of HTML Zip files"
+					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter_HTML_Zip_Files').output.Value",
+						"type": "Expression"
+					},
+					"batchCount": 10,
+					"activities": [
+						{
+							"name": "Get Metadata_Check_Existance_Of_Iv1",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+									"type": "DatasetReference",
+									"parameters": {
+										"dsAzureBlobContainer": {
+											"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.unzipBlobPath,pipeline().parameters.zipFileName,'/',item().name,'/',substring(item().name, 0, lastIndexOf(item().name, '.')))",
+											"type": "Expression"
+										},
+										"dsAzureBlobPath": {
+											"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images/lv1')",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"exists"
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							}
+						},
+						{
+							"name": "Condition_To_Check_If_lv1_To_be_Copied",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "SetVariable__islv2Required",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('Get Metadata_Check_Existance_Of_Iv1').output.exists",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Get Metadata_Check_Existance_Of_Iv2",
+										"type": "GetMetadata",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"dataset": {
+												"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"dsAzureBlobContainer": {
+														"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.unzipBlobPath,pipeline().parameters.zipFileName,'/',item().name,'/',substring(item().name, 0, lastIndexOf(item().name, '.')))",
+														"type": "Expression"
+													},
+													"dsAzureBlobPath": {
+														"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images/lv2')",
+														"type": "Expression"
+													}
+												}
+											},
+											"fieldList": [
+												"exists"
+											],
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										}
+									},
+									{
+										"name": "SetVariable_islv2Required",
+										"type": "SetVariable",
+										"state": "Inactive",
+										"onInactiveMarkAs": "Succeeded",
+										"dependsOn": [
+											{
+												"activity": "Get Metadata_Check_Existance_Of_Iv2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "islv2Required",
+											"value": {
+												"value": "@activity('Get Metadata_Check_Existance_Of_Iv2').output.exists",
+												"type": "Expression"
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy_HTML_Images_From_lv1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 3,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [
+											{
+												"name": "FileName",
+												"value": "@item().name"
+											},
+											{
+												"name": "Transaction",
+												"value": "partsassetimg"
+											},
+											{
+												"name": "SourceSystem",
+												"value": "pim"
+											},
+											{
+												"name": "TargetSystem",
+												"value": "aem"
+											},
+											{
+												"name": "CustomMessage",
+												"value": "Copy Html Zip Files to blobcontainer"
+											}
+										],
+										"typeProperties": {
+											"source": {
+												"type": "BinarySource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"maxConcurrentConnections": 10,
+													"recursive": true,
+													"deleteFilesAfterCompletion": false
+												},
+												"formatSettings": {
+													"type": "BinaryReadSettings"
+												}
+											},
+											"sink": {
+												"type": "BinarySink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings",
+													"maxConcurrentConnections": 10
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"dsAzureBlobContainer": {
+														"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.unzipBlobPath,pipeline().parameters.zipFileName,'/',item().name,'/',substring(item().name, 0, lastIndexOf(item().name, '.')))",
+														"type": "Expression"
+													},
+													"dsAzureBlobPath": {
+														"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images/lv1')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"dsAzureBlobContainer": {
+														"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.imageBlobPath)",
+														"type": "Expression"
+													},
+													"dsAzureBlobPath": {
+														"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images')",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "Get_EmailIds_lv1",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "Copy_HTML_Images_From_lv1",
+												"dependencyConditions": [
+													"Failed"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureTableSource",
+												"azureTableSourceQuery": {
+													"value": "PartitionKey eq 'PartsAssetImg'",
+													"type": "Expression"
+												},
+												"azureTableSourceIgnoreTableNotFound": false
+											},
+											"dataset": {
+												"referenceName": "dsEmail_AzureTableStorage_01",
+												"type": "DatasetReference"
+											}
+										}
+									},
+									{
+										"name": "Send_Error_Email_On_CopyFailure",
+										"type": "WebActivity",
+										"dependsOn": [
+											{
+												"activity": "Get_EmailIds_lv1",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 3,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"method": "POST",
+											"url": {
+												"value": "@pipeline().globalParameters.httpsUrlForEmail",
+												"type": "Expression"
+											},
+											"body": {
+												"value": "@concat('{\n  \"attachments\": [\n    {\n      \"contentData\": \"\",\n      \"contentId\": \"\",\n      \"contentType\": \"\",\n      \"fileName\": \"\"\n    }\n  ],\n  \"bodyText\": \"Error Occured while copying the HTML 360 Images for HTML Zip File: ',item().name,' with below mentioned Error:',replace(activity('Copy_HTML_Images_From_lv1').output.errors[0].Message,'''',''),'\",\n  \"ccEmailAddress\": \"',activity('Get_EmailIds_lv1').output.firstRow.CcEmailIds,'\",\n  \"fromEmailAddress\": \"',pipeline().globalParameters.fromEmailAddress,'\",\n  \"subject\": \"Error in ',pipeline().globalParameters.environment,': Path Not Cound\",\n  \"toEmailAddresses\": \"',activity('Get_EmailIds_lv1').output.firstRow.ToEmailIds,'\"}')",
+												"type": "Expression"
+											},
+											"authentication": {
+												"type": "ServicePrincipal",
+												"userTenant": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+												"username": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"resource": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"password": {
+													"type": "AzureKeyVaultSecret",
+													"store": {
+														"referenceName": "lsAzureKeyVault",
+														"type": "LinkedServiceReference"
+													},
+													"secretName": "notification-emailservice-secret"
+												}
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "Condition_To_Check_If_lv2_To_be_Copied",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Condition_To_Check_If_lv1_To_be_Copied",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('Get Metadata_Check_Existance_Of_Iv2').output.exists",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy_HTML_Images_From_lv2",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 3,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [
+											{
+												"name": "FileName",
+												"value": "@item().name"
+											},
+											{
+												"name": "Transaction",
+												"value": "partsassetimg"
+											},
+											{
+												"name": "SourceSystem",
+												"value": "pim"
+											},
+											{
+												"name": "TargetSystem",
+												"value": "aem"
+											},
+											{
+												"name": "CustomMessage",
+												"value": "Copy Html Zip Files to blobcontainer"
+											}
+										],
+										"typeProperties": {
+											"source": {
+												"type": "BinarySource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"maxConcurrentConnections": 10,
+													"recursive": true,
+													"deleteFilesAfterCompletion": false
+												},
+												"formatSettings": {
+													"type": "BinaryReadSettings"
+												}
+											},
+											"sink": {
+												"type": "BinarySink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings",
+													"maxConcurrentConnections": 10
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"dsAzureBlobContainer": {
+														"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.unzipBlobPath,pipeline().parameters.zipFileName,'/',item().name,'/',substring(item().name, 0, lastIndexOf(item().name, '.')))",
+														"type": "Expression"
+													},
+													"dsAzureBlobPath": {
+														"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images/lv2')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"dsAzureBlobContainer": {
+														"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.imageBlobPath)",
+														"type": "Expression"
+													},
+													"dsAzureBlobPath": {
+														"value": "@concat(substring(item().name, 0, lastIndexOf(item().name, '.')),'/images')",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									},
+									{
+										"name": "Get_EmailIds_lv2",
+										"type": "Lookup",
+										"dependsOn": [
+											{
+												"activity": "Copy_HTML_Images_From_lv2",
+												"dependencyConditions": [
+													"Failed"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureTableSource",
+												"azureTableSourceQuery": {
+													"value": "PartitionKey eq 'PartsAssetImg'",
+													"type": "Expression"
+												},
+												"azureTableSourceIgnoreTableNotFound": false
+											},
+											"dataset": {
+												"referenceName": "dsEmail_AzureTableStorage_01",
+												"type": "DatasetReference"
+											}
+										}
+									},
+									{
+										"name": "Send_Error_Email_On_CopyFailure_lV2",
+										"type": "WebActivity",
+										"dependsOn": [
+											{
+												"activity": "Get_EmailIds_lv2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 3,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"method": "POST",
+											"url": {
+												"value": "@pipeline().globalParameters.httpsUrlForEmail",
+												"type": "Expression"
+											},
+											"body": {
+												"value": "@concat('{\n  \"attachments\": [\n    {\n      \"contentData\": \"\",\n      \"contentId\": \"\",\n      \"contentType\": \"\",\n      \"fileName\": \"\"\n    }\n  ],\n  \"bodyText\": \"Error Occured while copying the HTML 360 Images for HTML Zip File: ',item().name ,' with below mentioned Error:',replace(activity('Copy_HTML_Images_From_lv2').output.errors[0].Message,'''',''),'\",\n  \"ccEmailAddress\": \"',activity('Get_EmailIds_lv2').output.firstRow.CcEmailIds,'\",\n  \"fromEmailAddress\": \"',pipeline().globalParameters.fromEmailAddress,'\",\n  \"subject\": \"Error in ',pipeline().globalParameters.environment,': Path Not Cound\",\n  \"toEmailAddresses\": \"',activity('Get_EmailIds_lv2').output.firstRow.ToEmailIds,'\"}')",
+												"type": "Expression"
+											},
+											"authentication": {
+												"type": "ServicePrincipal",
+												"userTenant": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+												"username": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"resource": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"password": {
+													"type": "AzureKeyVaultSecret",
+													"store": {
+														"referenceName": "lsAzureKeyVault",
+														"type": "LinkedServiceReference"
+													},
+													"secretName": "notification-emailservice-secret"
+												}
+											}
+										}
+									}
+								]
+							}
+						},
+						{
+							"name": "SetVariable__islv2Required",
+							"type": "SetVariable",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [
+								{
+									"activity": "Get Metadata_Check_Existance_Of_Iv1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "islv2Required",
+								"value": {
+									"value": "@bool(false)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Condition_To_Check_If_lv1_and_iv2_path_missing",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Condition_To_Check_If_lv2_To_be_Copied",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@and(equals(activity('Get Metadata_Check_Existance_Of_Iv1').output.exists,false),equals(activity('Get Metadata_Check_Existance_Of_Iv2').output.exists,false))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Get_EmailIds",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureTableSource",
+												"azureTableSourceQuery": {
+													"value": "PartitionKey eq 'PartsAssetImg'",
+													"type": "Expression"
+												},
+												"azureTableSourceIgnoreTableNotFound": false
+											},
+											"dataset": {
+												"referenceName": "dsEmail_AzureTableStorage_01",
+												"type": "DatasetReference"
+											}
+										}
+									},
+									{
+										"name": "Send_Email_Required_Path_Missing",
+										"type": "WebActivity",
+										"dependsOn": [
+											{
+												"activity": "Get_EmailIds",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 3,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"method": "POST",
+											"url": {
+												"value": "@pipeline().globalParameters.httpsUrlForEmail",
+												"type": "Expression"
+											},
+											"body": {
+												"value": "@concat('{\n  \"attachments\": [\n    {\n      \"contentData\": \"\",\n      \"contentId\": \"\",\n      \"contentType\": \"\",\n      \"fileName\": \"\"\n    }\n  ],\n  \"bodyText\": \"Required lv1 and lv2 Path for HTML 360 Images in HTML zip File: ',item().name,' is missing.\",\n  \"ccEmailAddress\": \"',activity('Get_EmailIds_lv2').output.firstRow.CcEmailIds,'\",\n  \"fromEmailAddress\": \"',pipeline().globalParameters.fromEmailAddress,'\",\n  \"subject\": \"Error in ',pipeline().globalParameters.environment,': Path Not Cound\",\n  \"toEmailAddresses\": \"',activity('Get_EmailIds_lv2').output.firstRow.ToEmailIds,'\"}')",
+												"type": "Expression"
+											},
+											"authentication": {
+												"type": "ServicePrincipal",
+												"userTenant": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+												"username": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"resource": "fc39e7d0-e6f1-42ec-9e2f-b1c8392479e1",
+												"password": {
+													"type": "AzureKeyVaultSecret",
+													"store": {
+														"referenceName": "lsAzureKeyVault",
+														"type": "LinkedServiceReference"
+													},
+													"secretName": "notification-emailservice-secret"
+												}
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Delete_Unzipped_Folder",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Copy_Jpg_Images",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy Attachments",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy_Png_Images",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ForEach_HTML_ZipFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "FileName",
+						"value": "@pipeline().parameters.zipFileName"
+					},
+					{
+						"name": "Transaction",
+						"value": "partsassetimg"
+					},
+					{
+						"name": "SourceSystem",
+						"value": "pim"
+					},
+					{
+						"name": "TargetSystem",
+						"value": "aem"
+					},
+					{
+						"name": "CustomMessage",
+						"value": "Delete Unzipped Folder"
+					}
+				],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "dsPIM_Adobe_PartsAssetImg_AzureBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"dsAzureBlobContainer": {
+								"value": "@concat(pipeline().globalParameters.inboundAzureStorageContainer,'/',pipeline().parameters.unzipBlobPath)",
+								"type": "Expression"
+							},
+							"dsAzureBlobPath": {
+								"value": "@pipeline().parameters.zipFileName",
+								"type": "Expression"
+							}
+						}
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"parameters": {
+			"unzipBlobPath": {
+				"type": "string"
+			},
+			"imageBlobPath": {
+				"type": "string"
+			},
+			"attachmentBlobPath": {
+				"type": "string"
+			},
+			"zipBlobPath": {
+				"type": "string"
+			},
+			"zipFileName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"jsonFilePath": {
+				"type": "String"
+			},
+			"assetMediaBlobPath": {
+				"type": "String"
+			},
+			"islv2Required": {
+				"type": "Boolean"
+			}
+		},
+		"annotations": []
+	}
+}

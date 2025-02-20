@@ -1,0 +1,9 @@
+{
+    "resourceGroupName": "kac_KX_Integrations_QA_rg",
+    "location": "eastus",
+    "adfName": "kom-kxint-eus-qa-df1",
+    "keyVaultName": "kom-kx-eus-qa-kv",
+    "awss3-accesskeyid": "pimfeed-pim-awss3-accesskeyid",
+    "awss3-secretaccesskey": "pimfeed-pim-awss3-secretaccesskey",
+    "sftp-key": "pimfeed-com-sftp-key"
+  }

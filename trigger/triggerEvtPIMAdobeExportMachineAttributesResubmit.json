@@ -1,0 +1,31 @@
+{
+	"name": "triggerEvtPIMAdobeExportMachineAttributesResubmit",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "kom-pimAdobeExportResubmit-dev-pipe",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"azureStorageBlobFilePath": "to_com/machineattributes/",
+					"retriggerAzureStorageBlobFileName": "@triggerBody().fileName",
+					"retriggerAzureStorageBlobFilePath": "@triggerBody().folderPath",
+					"transactionName": "Machine Attributes Feed",
+					"flowName": "PIM-Commerce-Machine-Data"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/retrigger/blobs/to_com/machineattributes/",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/7f07baf7-8bba-4b88-b300-74ba5b15f52d/resourceGroups/kac_KX_Integrations_Dev_rg/providers/Microsoft.Storage/storageAccounts/komkxintdataeusdevdl",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

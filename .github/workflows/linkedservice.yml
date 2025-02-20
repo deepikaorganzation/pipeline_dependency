@@ -6,6 +6,9 @@ on:
       environment:
         required: true
         type: string
+      TESTEV: 
+        required: true
+        type: string
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -36,7 +39,7 @@ jobs:
         echo ${{ secrets.AZURE_CLIENT_SECRET }}
         echo ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         echo ${{ secrets.AZURE_TENANT_ID }}
-        echo ${{ env.TESTEV}}
+        echo ${{ inputs.TESTEV}}
 
     - name: Log in to Azure
       uses: azure/login@v2

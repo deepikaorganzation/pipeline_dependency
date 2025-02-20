@@ -50,12 +50,13 @@ jobs:
             --resource-group komatsu-poc \
             --template-file main.bicep \
             --parameters adfName=test-kx-poc
-            
+
   test:
     needs: deploy-adf
     uses: ./.github/workflows/linkedservice.yml
     with: 
       environment: ${{ github.event.inputs.environment }}
+      TESTEV: ${{ github.env.ENV_VAR }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

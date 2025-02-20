@@ -50,16 +50,16 @@ jobs:
             --template-file main.bicep \
             --parameters adfName=komatsu-test-poc
 
-    test:
-      needs: deploy-ADF
-      uses: ./.github/workflows/linkedservice.yml
-      with: 
-        environment: ${{ github.event.inputs.environment }}
-      secrets:
-        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  test:
+    needs: deploy-adf
+    uses: ./.github/workflows/linkedservice.yml
+    with: 
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       # - name: Extract Pipeline Order from JSON
       #   id: get_pipeline_order
@@ -148,91 +148,91 @@ jobs:
           #     --template-file pipeline.bicep \
           #     --parameters factoryName=komatsu-test-poc pipelines="$pipeline"
           # done
-      - name: Check dependencies.json contents
-        run: |
-            cat ./dependencies.json  # Check the contents of the JSON file
+      # - name: Check dependencies.json contents
+      #   run: |
+      #       cat ./dependencies.json  # Check the contents of the JSON file
         
-      - name: Extract Linked Service Order from JSON
-        id: get_linked_service_order
-        run: |
-          # Fetch and print the linkedServices and pipelines objects as JSON
-          LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)
-          PIPELINES=$(jq -c '.pipelines' ./dependencies.json)
+      # - name: Extract Linked Service Order from JSON
+      #   id: get_linked_service_order
+      #   run: |
+      #     # Fetch and print the linkedServices and pipelines objects as JSON
+      #     LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)
+      #     PIPELINES=$(jq -c '.pipelines' ./dependencies.json)
       
-          # Print to debug
-          echo "LINKED_SERVICES: $LINKED_SERVICES"
-          echo "PIPELINES: $PIPELINES"
+      #     # Print to debug
+      #     echo "LINKED_SERVICES: $LINKED_SERVICES"
+      #     echo "PIPELINES: $PIPELINES"
       
-          # Set them as environment variables (print for debugging)
-          echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
-          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
+      #     # Set them as environment variables (print for debugging)
+      #     echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+      #     echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
         
-      - name: Deploy Linked Services in Order
-        run: |
-          linked_services="$LINKED_SERVICES"
-          deployed=()
+      # - name: Deploy Linked Services in Order
+      #   run: |
+      #     linked_services="$LINKED_SERVICES"
+      #     deployed=()
 
-          deploy_linked_service() {
-            local linked_service=$1
-            if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
-              echo "$linked_service already deployed."
-              return
-            fi
+      #     deploy_linked_service() {
+      #       local linked_service=$1
+      #       if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
+      #         echo "$linked_service already deployed."
+      #         return
+      #       fi
 
-            # Deploy dependencies first
-            for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
-              deploy_linked_service $dep
-            done
+      #       # Deploy dependencies first
+      #       for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
+      #         deploy_linked_service $dep
+      #       done
 
-            # Ensure the linked service JSON file exists and contains valid properties
-            linked_service_json=$(jq -c '.properties' linkedService/$linked_service.json)
+      #       # Ensure the linked service JSON file exists and contains valid properties
+      #       linked_service_json=$(jq -c '.properties' linkedService/$linked_service.json)
             
 
-            # Deploy the linked service
-            echo "Deploying Linked Service: $linked_service..."
-            az datafactory linked-service create \
-              --factory-name komatsu-test-poc \
-              --resource-group komatsu-poc \
-              --name "$linked_service" \
-              --properties "$linked_service_json"
+      #       # Deploy the linked service
+      #       echo "Deploying Linked Service: $linked_service..."
+      #       az datafactory linked-service create \
+      #         --factory-name komatsu-test-poc \
+      #         --resource-group komatsu-poc \
+      #         --name "$linked_service" \
+      #         --properties "$linked_service_json"
             
-            deployed+=("$linked_service")
-          }
+      #       deployed+=("$linked_service")
+      #     }
 
-          # Iterate through each linked service in the linkedServices object
-          for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
-            deploy_linked_service $linked_service
-          done
+      #     # Iterate through each linked service in the linkedServices object
+      #     for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
+      #       deploy_linked_service $linked_service
+      #     done
         
-      - name: Deploy Pipelines in Order
-        run: |
-          pipelines="$PIPELINES"
-          deployed=()
+      # - name: Deploy Pipelines in Order
+      #   run: |
+      #     pipelines="$PIPELINES"
+      #     deployed=()
       
-          deploy_pipeline() {
-            local pipeline=$1
-            if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
-              echo "$pipeline already deployed."
-              return
-            fi
+      #     deploy_pipeline() {
+      #       local pipeline=$1
+      #       if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
+      #         echo "$pipeline already deployed."
+      #         return
+      #       fi
       
-            # Deploy dependencies first
-            for dep in $(echo $pipelines | jq -r ".[] | select(.name == \"$pipeline\") | .dependsOn[]"); do
-              deploy_pipeline $dep
-            done
+      #       # Deploy dependencies first
+      #       for dep in $(echo $pipelines | jq -r ".[] | select(.name == \"$pipeline\") | .dependsOn[]"); do
+      #         deploy_pipeline $dep
+      #       done
       
-            # Deploy the pipeline
-            echo "Deploying Pipeline: $pipeline..."
-            az datafactory pipeline create \
-              --factory-name komatsu-test-poc \
-              --resource-group komatsu-poc \
-              --name "$pipeline" \
-              --properties "@pipeline/$pipeline.json"
-            deployed+=("$pipeline")
-          }
+      #       # Deploy the pipeline
+      #       echo "Deploying Pipeline: $pipeline..."
+      #       az datafactory pipeline create \
+      #         --factory-name komatsu-test-poc \
+      #         --resource-group komatsu-poc \
+      #         --name "$pipeline" \
+      #         --properties "@pipeline/$pipeline.json"
+      #       deployed+=("$pipeline")
+      #     }
 
-          for pipeline in $(echo $pipelines | jq -r '.[].name'); do
-            deploy_pipeline $pipeline
-          done
+      #     for pipeline in $(echo $pipelines | jq -r '.[].name'); do
+      #       deploy_pipeline $pipeline
+      #     done
 
         

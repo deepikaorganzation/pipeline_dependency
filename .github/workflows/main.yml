@@ -69,7 +69,7 @@ jobs:
       - name: Extract Pipeline Order from JSON
         id: get_pipeline_order
         run: |
-          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' dependencies.json)
+          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' ./dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
           echo $PIPELINES
       

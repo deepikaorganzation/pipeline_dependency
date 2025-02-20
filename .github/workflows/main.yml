@@ -49,7 +49,7 @@ jobs:
           az deployment group create \
             --resource-group komatsu-poc \
             --template-file main.bicep \
-            --parameters adfName=komatsu-test-poc
+            --parameters adfName=test-kx-poc
 
   test:
     needs: deploy-adf

@@ -1,0 +1,22 @@
+{
+  "pipelines": {
+    "pipeline1-dev-kx": {
+      "name": "pipeline1-dev-kx",
+      "dependsOn": []
+    },
+    "pipeline2-dev-kx": {
+      "name": "pipeline2-dev-kx",
+      "dependsOn": ["pipeline1-dev-kx"]
+    }
+  },
+  "linkedServices": {
+    "AzureKeyVaultPOC": {
+      "name": "AzureKeyVaultPOC",
+      "dependsOn": []
+    },
+    "AzureBlobStoragePOC": {
+      "name": "AzureBlobStoragePOC",
+      "dependsOn": ["AzureKeyVaultPOC"]
+    }
+  }
+}

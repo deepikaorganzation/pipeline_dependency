@@ -1,0 +1,10 @@
+{
+    "name": "AzureKeyVaultPOC",
+    "properties": {
+        "annotations": [],
+        "type": "AzureKeyVault",
+        "typeProperties": {
+            "baseUrl": "https://kx1-demo-dev.vault.azure.net/"
+        }
+    }
+}

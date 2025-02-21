@@ -63,6 +63,7 @@ jobs:
 
   deploy: 
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -77,6 +78,7 @@ jobs:
           PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' ./dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
           echo $PIPELINES
+          echo $ENV_VAR
       
       - name: Deploy Pipelines in Order
         run: |
@@ -152,7 +154,7 @@ jobs:
 
           az deployment group create \
             --resource-group komatsu-poc \
-            --template-file ./bicep/modules/pipeline.bicep \
+            --template-file ./pipeline.bicep \
             --parameters dataFactoryName=test-kx-poc pipelines="$pipeline"
           done
       # - name: Check dependencies.json contents

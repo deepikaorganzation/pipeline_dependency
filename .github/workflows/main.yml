@@ -1,9 +1,7 @@
 name: Deploy ADF Pipelines
 
 on:
-  push:
-    branches:
-      - main  
+  
   workflow_dispatch:
     inputs:
       environment:

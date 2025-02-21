@@ -129,7 +129,7 @@ jobs:
           | walk(
               if type == "object" then
                 to_entries | map(
-                  if .value | type == "object" and .value | has("typeProperties") then
+                  if .value | type == "object" then
                     .value |= walk(
                       if type == "object" and has("typeProperties") then
                         .typeProperties.pipeline.referenceName |=

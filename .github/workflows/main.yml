@@ -64,9 +64,12 @@ jobs:
   deploy: 
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
       - name: Check dependencies.json contents
         run: |
-            cat ../dependencies.json
+            cat ./dependencies.json
 
       - name: Extract Pipeline Order from JSON
         id: get_pipeline_order

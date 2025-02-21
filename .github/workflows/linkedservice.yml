@@ -25,7 +25,7 @@ env:
   resourceGroupName: $(jq -r ".resourceGroupName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
   lsAzureBlobStorageServicetUrl: $(jq -r ".lsAzureBlobStorageServicetUrl" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
   storageAccountName: $(jq -r ".storageAccountName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
-  sftp-hostname: $(jq -r ".sftp-hostname" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
+  sftp-hostname: $(jq -r '."sftp-hostname"' ./bicep/parameters/${{ inputs.environment }}Parameters.json)
 
 jobs:
   

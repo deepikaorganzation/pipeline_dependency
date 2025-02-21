@@ -54,7 +54,6 @@ jobs:
     uses: ./.github/workflows/trigger.yaml
     with: 
       environment: ${{ github.event.inputs.environment }}
-      TESTEV: ${{ github.env.ENV_VAR }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

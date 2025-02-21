@@ -124,10 +124,23 @@ jobs:
 
           # Read and transform JSON
           NEW_JSON=$(jq --arg env "${{ inputs.environment }}" '
-            (.name // "") as $origName
-            | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
-            | (.properties.activities[]? | select(has("typeProperties")) | .typeProperties.pipeline.referenceName)? |= 
-              if . != null then sub("dev|qa|uat|prod"; $env; "g") else . end' pipeline/"$PIPELINE_NAME".json)
+          (.name // "") as $origName
+          | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
+          | walk(
+              if type == "object" then
+                to_entries | map(
+                  if .value | type == "object" and .value | has("typeProperties") then
+                    .value |= walk(
+                      if type == "object" and has("typeProperties") then
+                        .typeProperties.pipeline.referenceName |=
+                          if . != null then sub("dev|qa|uat|prod"; $env; "g") else . end
+                      else . end
+                    )
+                  else . end
+                ) | from_entries
+              else . end
+            )' pipeline/"$PIPELINE_NAME".json)
+
 
           # Ensure NEW_JSON is valid JSON
           if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then

@@ -54,30 +54,23 @@ jobs:
               walk(
                 if type == "object" then
                   # Update pipelineReference.referenceName if it exists
-                  if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                  else
-                    .
-                  end
+                  (.pipelineReference.referenceName // empty) |= sub("dev|qa|uat|prod"; $env; "g") |
                   # Update typeProperties.scope if it exists
-                  if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                  else
-                    .
-                  end
+                  (.typeProperties.scope // empty) |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
                 else
                   .
                 end
-            )' "$file")
-
+              )' "$file")
+        
             # Extract the base file name without extension for the name in the final array
             triggerName=$(basename "$file" .json)
-
+        
             # Add the processed trigger to the TriggerArray
             TriggerArray+=(
               "{ \"name\": \"$triggerName\", \"definition\": $updatedTrigger }"
             )
         done
+
 
         # Construct a JSON array for the triggers
         TriggerJSON="[ ${TriggerArray[*]} ]"

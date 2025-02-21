@@ -19,6 +19,7 @@ on:
 env: 
   adfName: $(jq -r ".adfName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
   resourceGroupName: $(jq -r ".resourceGroupName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
+  triggerFiles: './trigger/triggerEvtPIMAdobeExportMachineAttributesResubmit.json ./trigger/triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit.json ./trigger/triggerEvtPIMAdobeExportPartsResubmit.json ./trigger/triggerEvtPIMAdobeExportSalesHierarchyResubmit.json ./trigger/triggerSchPIMAdobeExportMachineAttributes.json ./trigger/triggerSchPIMAdobeExportMachineStructureHierarchy.json ./trigger/triggerSchPIMAdobeExportParts.json ./trigger/triggerSchPIMAdobeExportSalesHierarchy.json ./trigger/triggerSchPIMAzureBlobPartsAssetImg.json'
 
 jobs:
 
@@ -43,212 +44,47 @@ jobs:
 
     - name: Read Trigger JSON files and deploy
       run: |
-          # Ensure the correct path to the JSON files
-            TestTrigger1=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
+        # Initialize an empty array for triggers
+        TriggerArray=()
+
+        # Loop through each trigger file and modify its content dynamically
+        for file in ${{ env.triggerFiles }}; do
+            # Process each trigger and update the pipelineReference and scope dynamically based on the environment
+            updatedTrigger=$(jq --arg env "${{ inputs.environment }}" '
+              walk(
                 if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
+                  # Update pipelineReference.referenceName if it exists
+                  if has("pipelineReference") and has("pipelineReference.referenceName") then
                     .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
+                  else
                     .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
+                  end
+                  # Update typeProperties.scope if it exists
+                  if has("typeProperties") and has("typeProperties.scope") then
                     .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
+                  else
                     .
-                end
+                  end
                 else
-                .
+                  .
                 end
-            )' ./trigger/triggerEvtPIMAdobeExportMachineAttributesResubmit.json)
+            )' "$file")
 
-            TestTrigger2=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit.json)
+            # Extract the base file name without extension for the name in the final array
+            triggerName=$(basename "$file" .json)
 
-            TestTrigger3=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerEvtPIMAdobeExportPartsResubmit.json)
+            # Add the processed trigger to the TriggerArray
+            TriggerArray+=(
+              "{ \"name\": \"$triggerName\", \"definition\": $updatedTrigger }"
+            )
+        done
 
-            TestTrigger4=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerEvtPIMAdobeExportSalesHierarchyResubmit.json)
+        # Construct a JSON array for the triggers
+        TriggerJSON="[ ${TriggerArray[*]} ]"
 
-            TestTrigger5=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerSchPIMAdobeExportMachineAttributes.json)
-
-            TestTrigger6=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerSchPIMAdobeExportMachineStructureHierarchy.json)
-
-            TestTrigger7=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerSchPIMAdobeExportParts.json)
-
-            TestTrigger8=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerSchPIMAdobeExportSalesHierarchy.json)
-
-            TestTrigger9=$(jq --arg env "${{ inputs.environment }}" '
-            walk(
-                if type == "object" then
-                # Update pipelineReference.referenceName if it exists
-                if has("pipelineReference") and has("pipelineReference.referenceName") then
-                    .pipelineReference.referenceName |= sub("dev|qa|uat|prod"; $env; "g")
-                else
-                    .
-                end
-                # Update typeProperties.scope if it exists
-                if has("typeProperties") and has("typeProperties.scope") then
-                    .typeProperties.scope |= sub("dev|Dev|qa|QA|uat|UAT|prod"; $env; "g")
-                else
-                    .
-                end
-                else
-                .
-                end
-            )' ./trigger/triggerSchPIMAzureBlobPartsAssetImg.json)
-
-            # Construct a JSON array with the Trigger contents
-            TestTrigger=$(jq -n \
-            --arg TestTrigger1 "$TestTrigger1" \
-            --arg TestTrigger2 "$TestTrigger2" \
-            --arg TestTrigger3 "$TestTrigger3" \
-            --arg TestTrigger4 "$TestTrigger4" \
-            --arg TestTrigger5 "$TestTrigger5" \
-            --arg TestTrigger6 "$TestTrigger6" \
-            --arg TestTrigger7 "$TestTrigger7" \
-            --arg TestTrigger8 "$TestTrigger8" \
-            --arg TestTrigger9 "$TestTrigger9" \
-            '[ 
-                {"name": "triggerEvtPIMAdobeExportMachineAttributesResubmit", "definition": $TestTrigger1 | fromjson},
-                {"name": "triggerEvtPIMAdobeExportMachineStructureHierarchyResubmit", "definition": $TestTrigger2 | fromjson},
-                {"name": "triggerEvtPIMAdobeExportPartsResubmit", "definition": $TestTrigger3 | fromjson},
-                {"name": "triggerEvtPIMAdobeExportSalesHierarchyResubmit", "definition": $TestTrigger4 | fromjson},
-                {"name": "triggerSchPIMAdobeExportMachineAttributes", "definition": $TestTrigger5 | fromjson},
-                {"name": "triggerSchPIMAdobeExportMachineStructureHierarchy", "definition": $TestTrigger6 | fromjson},
-                {"name": "triggerSchPIMAdobeExportParts", "definition": $TestTrigger7 | fromjson},
-                {"name": "triggerSchPIMAdobeExportSalesHierarchy", "definition": $TestTrigger8 | fromjson},
-                {"name": "triggerSchPIMAzureBlobPartsAssetImg", "definition": $TestTrigger9 | fromjson}
-            ]')
-
-            # Deploy using Bicep (or ARM template)
-            az deployment group create \
-            --resource-group ${{ env.resourceGroupName }} \
-            --template-file ./bicep/modules/trigger.bicep \
-            --parameters dataFactory
+        # Deploy using Bicep (or ARM template)
+        az deployment group create \
+          --resource-group ${{ env.resourceGroupName }} \
+          --template-file ./bicep/modules/trigger.bicep \
+          --parameters dataFactoryName=${{ env.adfName }} \
+          --parameters triggers="$TriggerJSON"

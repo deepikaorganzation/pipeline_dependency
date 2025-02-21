@@ -78,7 +78,7 @@ jobs:
           PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' ./dependencies.json)
           echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
           echo $PIPELINES
-          echo $ENV_VAR
+          echo "${{ inputs.environment }}"
       
       - name: Deploy Pipelines in Order
         run: |
@@ -123,7 +123,7 @@ jobs:
           PIPELINE_NAME=$(echo "$row" | jq -r '.name')
 
           # Read and transform JSON
-          NEW_JSON=$(jq --arg env "$ENV_VAR" '
+          NEW_JSON=$(jq --arg env "${{ inputs.environment }}" '
             (.name // "") as $origName
             | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
             | (.properties.activities[]? | select(has("typeProperties")) | .typeProperties.pipeline.referenceName)? |= 
@@ -155,7 +155,7 @@ jobs:
           az deployment group create \
             --resource-group komatsu-poc \
             --template-file ./pipeline.bicep \
-            --parameters dataFactoryName=test-kx-poc pipelines="$pipeline"
+            --parameters factoryName=test-kx-poc pipelines="$pipeline"
           done
       # - name: Check dependencies.json contents
       #   run: |

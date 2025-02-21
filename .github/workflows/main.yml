@@ -51,7 +51,7 @@ jobs:
 
   test:
     needs: deploy-adf
-    uses: ./.github/workflows/linkedservice.yml
+    uses: ./.github/workflows/trigger.yaml
     with: 
       environment: ${{ github.event.inputs.environment }}
       TESTEV: ${{ github.env.ENV_VAR }}

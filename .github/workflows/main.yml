@@ -141,7 +141,6 @@ jobs:
               else . end
             )' pipeline/"$PIPELINE_NAME".json)
 
-
           # Ensure NEW_JSON is valid JSON
           if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then
               echo "Error: NEW_JSON is empty or invalid" >&2

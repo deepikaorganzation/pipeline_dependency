@@ -52,3 +52,10 @@ jobs:
                 "tenantId":"${{ secrets.AZURE_TENANT_ID }}"
               }
         enable-AzPSSession: true
+
+    - name: Deploy Bicep Template
+      run: |
+        # This will transpile the bicep file into ARM template
+        az deployment group create 
+        --resource-group komatasu-poc\ 
+        --template-file ./storageTable.bicep

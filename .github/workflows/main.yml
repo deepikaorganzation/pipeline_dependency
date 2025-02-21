@@ -51,7 +51,7 @@ jobs:
 
   test:
     needs: deploy-adf
-    uses: ./.github/workflows/trigger.yaml
+    uses: ./.github/workflows/linkedservice.yml
     with: 
       environment: ${{ github.event.inputs.environment }}
     secrets:
@@ -60,210 +60,210 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-  deploy: 
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
+  # deploy: 
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.environment }}
+  #   steps:
+  #     - name: Checkout the repository
+  #       uses: actions/checkout@v2
 
-      - name: Install jq
-        run: sudo apt-get install jq
+  #     - name: Install jq
+  #       run: sudo apt-get install jq
 
-      - name: Log in to Azure
-        uses: azure/login@v2
-        with:
-          creds: >
-                {
-                  "clientId":"${{ secrets.AZURE_CLIENT_ID }}",
-                  "clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}",
-                  "subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-                  "tenantId":"${{ secrets.AZURE_TENANT_ID }}"
-                }
-          enable-AzPSSession: true
+  #     - name: Log in to Azure
+  #       uses: azure/login@v2
+  #       with:
+  #         creds: >
+  #               {
+  #                 "clientId":"${{ secrets.AZURE_CLIENT_ID }}",
+  #                 "clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}",
+  #                 "subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+  #                 "tenantId":"${{ secrets.AZURE_TENANT_ID }}"
+  #               }
+  #         enable-AzPSSession: true
 
-      - name: Extract Pipeline Order from JSON
-        id: get_pipeline_order
-        run: |
-          PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' ./dependencies.json)
-          echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
-          echo $PIPELINES
-          echo "${{ inputs.environment }}"
+  #     - name: Extract Pipeline Order from JSON
+  #       id: get_pipeline_order
+  #       run: |
+  #         PIPELINES=$(jq -c '.pipelines | sort_by(.dependsOn | length)' ./dependencies.json)
+  #         echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
+  #         echo $PIPELINES
+  #         echo "${{ inputs.environment }}"
       
-      - name: Deploy Pipelines in Order
-        run: |
-          # pipelines="$PIPELINES"  # Replace with the actual environment variable or input containing the dependency JSON
-          # deployed=()
+  #     - name: Deploy Pipelines in Order
+  #       run: |
+  #         # pipelines="$PIPELINES"  # Replace with the actual environment variable or input containing the dependency JSON
+  #         # deployed=()
       
-          # # Function to deploy a pipeline recursively, ensuring dependencies are deployed first
-          # deploy_pipeline() {
-          #   local pipeline=$1
-          #   if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
-          #     echo "$pipeline already deployed."
-          #     return
-          #   fi
-          #   # Deploy dependencies first
-          #   for dep in $(echo $pipelines | jq -r ".[\"$pipeline\"].dependsOn[]"); do
-          #     deploy_pipeline $dep
-          #   done
-          #   echo "Deploying Pipeline: $pipeline..."
+  #         # # Function to deploy a pipeline recursively, ensuring dependencies are deployed first
+  #         # deploy_pipeline() {
+  #         #   local pipeline=$1
+  #         #   if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
+  #         #     echo "$pipeline already deployed."
+  #         #     return
+  #         #   fi
+  #         #   # Deploy dependencies first
+  #         #   for dep in $(echo $pipelines | jq -r ".[\"$pipeline\"].dependsOn[]"); do
+  #         #     deploy_pipeline $dep
+  #         #   done
+  #         #   echo "Deploying Pipeline: $pipeline..."
             
-          #   # Get the pipeline name from the JSON file (ensure it’s correctly extracted)
-          #   pipeline_name=$(jq -r '.name' "pipeline/$pipeline.json")
+  #         #   # Get the pipeline name from the JSON file (ensure it’s correctly extracted)
+  #         #   pipeline_name=$(jq -r '.name' "pipeline/$pipeline.json")
             
-          #   # Make sure that $pipeline_name is not empty
-          #   if [ -z "$pipeline_name" ]; then
-          #     echo "Error: Pipeline name is missing in pipeline/$pipeline.json"
-          #     exit 1
-          #   fi
+  #         #   # Make sure that $pipeline_name is not empty
+  #         #   if [ -z "$pipeline_name" ]; then
+  #         #     echo "Error: Pipeline name is missing in pipeline/$pipeline.json"
+  #         #     exit 1
+  #         #   fi
       
-          #   # Deploy the pipeline using the az datafactory command with the --name argument
-          #   az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
-          #     --name "$pipeline_name" --template-file ./bicep/modules/pipeline.bicep "pipeline/$pipeline.json"
+  #         #   # Deploy the pipeline using the az datafactory command with the --name argument
+  #         #   az datafactory pipeline create --factory-name komatsu-test-poc --resource-group komatsu-poc \
+  #         #     --name "$pipeline_name" --template-file ./bicep/modules/pipeline.bicep "pipeline/$pipeline.json"
             
-          #   deployed+=("$pipeline")
-          # }
+  #         #   deployed+=("$pipeline")
+  #         # }
       
-          # # Loop through the pipelines and deploy each one, respecting dependencies
-          # for pipeline in $(echo $pipelines | jq -r 'keys[]'); do
-          #   deploy_pipeline $pipeline
-          # done
+  #         # # Loop through the pipelines and deploy each one, respecting dependencies
+  #         # for pipeline in $(echo $pipelines | jq -r 'keys[]'); do
+  #         #   deploy_pipeline $pipeline
+  #         # done
 
-          for row in $(echo "$PIPELINES" | jq -c '.[]'); do
-          PIPELINE_NAME=$(echo "$row" | jq -r '.name')
+  #         for row in $(echo "$PIPELINES" | jq -c '.[]'); do
+  #         PIPELINE_NAME=$(echo "$row" | jq -r '.name')
 
-          # Read and transform JSON
-          NEW_JSON=$(jq --arg env "${{ inputs.environment }}" '
-          (.name // "") as $origName
-          | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
-          | walk(
-              if type == "object" then
-                to_entries | map(
-                  if .value | type == "object" then
-                    .value |= walk(
-                      if type == "object" and has("typeProperties") then
-                        .typeProperties.pipeline.referenceName |=
-                          if . != null then sub("dev|qa|uat|prod"; $env; "g") else . end
-                      else . end
-                    )
-                  else . end
-                ) | from_entries
-              else . end
-            )' pipeline/"$PIPELINE_NAME".json)
+  #         # Read and transform JSON
+  #         NEW_JSON=$(jq --arg env "${{ inputs.environment }}" '
+  #         (.name // "") as $origName
+  #         | .name = if $origName != "" then $origName | sub("dev|qa|uat|prod"; $env; "g") else $origName end
+  #         | walk(
+  #             if type == "object" then
+  #               to_entries | map(
+  #                 if .value | type == "object" then
+  #                   .value |= walk(
+  #                     if type == "object" and has("typeProperties") then
+  #                       .typeProperties.pipeline.referenceName |=
+  #                         if . != null then sub("dev|qa|uat|prod"; $env; "g") else . end
+  #                     else . end
+  #                   )
+  #                 else . end
+  #               ) | from_entries
+  #             else . end
+  #           )' pipeline/"$PIPELINE_NAME".json)
 
-          # Ensure NEW_JSON is valid JSON
-          if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then
-              echo "Error: NEW_JSON is empty or invalid" >&2
-              exit 1
-          fi
-          NEW_NAME_PL=$(echo "$NEW_JSON" | jq -r '.name')
-          # Construct JSON object correctly
-          pipeline=$(jq -n --arg name "$NEW_NAME_PL" --argjson definition "$NEW_JSON" '
-            [
-              {
-                "name": $name, 
-                "definition": $definition
-              }
-            ]')
+  #         # Ensure NEW_JSON is valid JSON
+  #         if [[ -z "$NEW_JSON" || "$NEW_JSON" == "null" ]]; then
+  #             echo "Error: NEW_JSON is empty or invalid" >&2
+  #             exit 1
+  #         fi
+  #         NEW_NAME_PL=$(echo "$NEW_JSON" | jq -r '.name')
+  #         # Construct JSON object correctly
+  #         pipeline=$(jq -n --arg name "$NEW_NAME_PL" --argjson definition "$NEW_JSON" '
+  #           [
+  #             {
+  #               "name": $name, 
+  #               "definition": $definition
+  #             }
+  #           ]')
 
-          echo "Final pipeline JSON: $pipeline"
+  #         echo "Final pipeline JSON: $pipeline"
 
-          # Ensure pipeline is valid JSON
-          if [[ -z "$pipeline" || "$pipeline" == "null" ]]; then
-              echo "Error: pipeline JSON is empty or invalid" >&2
-              exit 1
-          fi
+  #         # Ensure pipeline is valid JSON
+  #         if [[ -z "$pipeline" || "$pipeline" == "null" ]]; then
+  #             echo "Error: pipeline JSON is empty or invalid" >&2
+  #             exit 1
+  #         fi
 
-          az deployment group create \
-            --resource-group komatsu-poc \
-            --template-file ./pipeline.bicep \
-            --parameters factoryName=test-kx-poc pipelines="$pipeline"
-          done
-      # - name: Check dependencies.json contents
-      #   run: |
-      #       cat ./dependencies.json  # Check the contents of the JSON file
+  #         az deployment group create \
+  #           --resource-group komatsu-poc \
+  #           --template-file ./pipeline.bicep \
+  #           --parameters factoryName=test-kx-poc pipelines="$pipeline"
+  #         done
+  #     # - name: Check dependencies.json contents
+  #     #   run: |
+  #     #       cat ./dependencies.json  # Check the contents of the JSON file
         
-      # - name: Extract Linked Service Order from JSON
-      #   id: get_linked_service_order
-      #   run: |
-      #     # Fetch and print the linkedServices and pipelines objects as JSON
-      #     LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)
-      #     PIPELINES=$(jq -c '.pipelines' ./dependencies.json)
+  #     # - name: Extract Linked Service Order from JSON
+  #     #   id: get_linked_service_order
+  #     #   run: |
+  #     #     # Fetch and print the linkedServices and pipelines objects as JSON
+  #     #     LINKED_SERVICES=$(jq -c '.linkedServices' ./dependencies.json)
+  #     #     PIPELINES=$(jq -c '.pipelines' ./dependencies.json)
       
-      #     # Print to debug
-      #     echo "LINKED_SERVICES: $LINKED_SERVICES"
-      #     echo "PIPELINES: $PIPELINES"
+  #     #     # Print to debug
+  #     #     echo "LINKED_SERVICES: $LINKED_SERVICES"
+  #     #     echo "PIPELINES: $PIPELINES"
       
-      #     # Set them as environment variables (print for debugging)
-      #     echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
-      #     echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
+  #     #     # Set them as environment variables (print for debugging)
+  #     #     echo "LINKED_SERVICES=$LINKED_SERVICES" >> $GITHUB_ENV
+  #     #     echo "PIPELINES=$PIPELINES" >> $GITHUB_ENV
         
-      # - name: Deploy Linked Services in Order
-      #   run: |
-      #     linked_services="$LINKED_SERVICES"
-      #     deployed=()
+  #     # - name: Deploy Linked Services in Order
+  #     #   run: |
+  #     #     linked_services="$LINKED_SERVICES"
+  #     #     deployed=()
 
-      #     deploy_linked_service() {
-      #       local linked_service=$1
-      #       if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
-      #         echo "$linked_service already deployed."
-      #         return
-      #       fi
+  #     #     deploy_linked_service() {
+  #     #       local linked_service=$1
+  #     #       if [[ " ${deployed[@]} " =~ " $linked_service " ]]; then
+  #     #         echo "$linked_service already deployed."
+  #     #         return
+  #     #       fi
 
-      #       # Deploy dependencies first
-      #       for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
-      #         deploy_linked_service $dep
-      #       done
+  #     #       # Deploy dependencies first
+  #     #       for dep in $(echo $linked_services | jq -r ".${linked_service}.dependsOn[]?"); do
+  #     #         deploy_linked_service $dep
+  #     #       done
 
-      #       # Ensure the linked service JSON file exists and contains valid properties
-      #       linked_service_json=$(jq -c '.properties' linkedService/$linked_service.json)
+  #     #       # Ensure the linked service JSON file exists and contains valid properties
+  #     #       linked_service_json=$(jq -c '.properties' linkedService/$linked_service.json)
             
 
-      #       # Deploy the linked service
-      #       echo "Deploying Linked Service: $linked_service..."
-      #       az datafactory linked-service create \
-      #         --factory-name komatsu-test-poc \
-      #         --resource-group komatsu-poc \
-      #         --name "$linked_service" \
-      #         --properties "$linked_service_json"
+  #     #       # Deploy the linked service
+  #     #       echo "Deploying Linked Service: $linked_service..."
+  #     #       az datafactory linked-service create \
+  #     #         --factory-name komatsu-test-poc \
+  #     #         --resource-group komatsu-poc \
+  #     #         --name "$linked_service" \
+  #     #         --properties "$linked_service_json"
             
-      #       deployed+=("$linked_service")
-      #     }
+  #     #       deployed+=("$linked_service")
+  #     #     }
 
-      #     # Iterate through each linked service in the linkedServices object
-      #     for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
-      #       deploy_linked_service $linked_service
-      #     done
+  #     #     # Iterate through each linked service in the linkedServices object
+  #     #     for linked_service in $(echo $linked_services | jq -r 'keys[]'); do
+  #     #       deploy_linked_service $linked_service
+  #     #     done
         
-      # - name: Deploy Pipelines in Order
-      #   run: |
-      #     pipelines="$PIPELINES"
-      #     deployed=()
+  #     # - name: Deploy Pipelines in Order
+  #     #   run: |
+  #     #     pipelines="$PIPELINES"
+  #     #     deployed=()
       
-      #     deploy_pipeline() {
-      #       local pipeline=$1
-      #       if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
-      #         echo "$pipeline already deployed."
-      #         return
-      #       fi
+  #     #     deploy_pipeline() {
+  #     #       local pipeline=$1
+  #     #       if [[ " ${deployed[@]} " =~ " $pipeline " ]]; then
+  #     #         echo "$pipeline already deployed."
+  #     #         return
+  #     #       fi
       
-      #       # Deploy dependencies first
-      #       for dep in $(echo $pipelines | jq -r ".[] | select(.name == \"$pipeline\") | .dependsOn[]"); do
-      #         deploy_pipeline $dep
-      #       done
+  #     #       # Deploy dependencies first
+  #     #       for dep in $(echo $pipelines | jq -r ".[] | select(.name == \"$pipeline\") | .dependsOn[]"); do
+  #     #         deploy_pipeline $dep
+  #     #       done
       
-      #       # Deploy the pipeline
-      #       echo "Deploying Pipeline: $pipeline..."
-      #       az datafactory pipeline create \
-      #         --factory-name komatsu-test-poc \
-      #         --resource-group komatsu-poc \
-      #         --name "$pipeline" \
-      #         --properties "@pipeline/$pipeline.json"
-      #       deployed+=("$pipeline")
-      #     }
+  #     #       # Deploy the pipeline
+  #     #       echo "Deploying Pipeline: $pipeline..."
+  #     #       az datafactory pipeline create \
+  #     #         --factory-name komatsu-test-poc \
+  #     #         --resource-group komatsu-poc \
+  #     #         --name "$pipeline" \
+  #     #         --properties "@pipeline/$pipeline.json"
+  #     #       deployed+=("$pipeline")
+  #     #     }
 
-      #     for pipeline in $(echo $pipelines | jq -r '.[].name'); do
-      #       deploy_pipeline $pipeline
-      #     done
+  #     #     for pipeline in $(echo $pipelines | jq -r '.[].name'); do
+  #     #       deploy_pipeline $pipeline
+  #     #     done
 
         

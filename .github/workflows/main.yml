@@ -68,8 +68,8 @@ jobs:
     steps:
       - name: Check dependencies.json contents
         run: |
-            cat ./dependencies.json  # Check the contents of the JSON file
-            
+            cat dependencies.json  # Check the contents of the JSON file
+
       - name: Extract Pipeline Order from JSON
         id: get_pipeline_order
         run: |

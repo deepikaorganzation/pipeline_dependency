@@ -46,6 +46,6 @@ jobs:
           
               # Deploy using the Bicep template
               az deployment group create \
-                --resource-group komatasu-poc \
+                --resource-group komatsu-poc \
                 --template-file ./storageTable.bicep
           

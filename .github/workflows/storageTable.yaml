@@ -38,7 +38,14 @@ jobs:
         
       - name: Deploy Bicep Template
         run: |
-          # This will transpile the bicep file into ARM template
-          az deployment group create \
-          --resource-group komatasu-poc\ 
-          --template-file ./storageTable.bicep
+              # Check if Bicep template exists
+              if [ ! -f ./storageTable.bicep ]; then
+                echo "Bicep template not found!"
+                exit 1
+              fi
+          
+              # Deploy using the Bicep template
+              az deployment group create \
+                --resource-group komatasu-poc \
+                --template-file ./storageTable.bicep
+          

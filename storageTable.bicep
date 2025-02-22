@@ -1,5 +1,5 @@
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: 'kx-storage-poc'
+  name: 'kxstoragepoc'
   location: resourceGroup().location
   sku: {
     name: 'Standard_LRS'

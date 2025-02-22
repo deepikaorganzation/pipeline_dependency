@@ -1,4 +1,4 @@
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: 'kxstoragepoc'
   location: resourceGroup().location
   sku: {
@@ -6,11 +6,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
   kind: 'StorageV2'
 }
-resource storageTableService 'Microsoft.Storage/storageAccounts/tableServices@2021-04-01' = {
+resource storageTableService 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = {
   parent: storageAccount
-  name: 'Table'  // name of the table inside the storage account
+  name: 'default'  // name of the table inside the storage account
 }
-resource storageTable 'Microsoft.Storage/storageAccounts/tableServices/tables@2021-04-01' = {
+resource storageTable 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = {
   parent: storageTableService
-  name: 'myTableName'  // name of the table inside the storage account
+  name: 'mykxpoctable'  // name of the table inside the storage account
 }

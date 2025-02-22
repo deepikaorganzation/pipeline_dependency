@@ -11,8 +11,12 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   kind: 'StorageV2'
 }
 
-// Loop through the tables array and create a table for each item
-resource tableService 'Microsoft.Storage/storageAccounts/tableServices@2021-04-01' = [for tableName in tables: {
+resource storageTableService 'Microsoft.Storage/storageAccounts/tableServices@2023-05-01' = {
   parent: storageAccount
+  name: 'default'  // name of the table inside the storage account
+}
+// Loop through the tables array and create a table for each item
+resource tableService 'Microsoft.Storage/storageAccounts/tableServices/tables@2023-05-01' = [for tableName in tables: {
+  parent: storageTableService
   name: tableName
 }]

@@ -1,6 +1,14 @@
 {
-    "serviceBusNamespaceName": "myservicebuspocex",
-    "serviceBusQueueName": "myqueueex",
-    "serviceBusTopicName": "mytopicex",
-    "serviceBusSubscriptionName": "mysubscriptionex"
+    "serviceBusNamespaceName": {
+        "value": "myservicebuspocex"
+    },
+    "serviceBusQueueName": {
+        "value": "myqueueex"
+    },
+    "serviceBusTopicName": {
+        "value": "mytopicex"
+    },
+    "serviceBusSubscriptionName": {
+        "value": "mysubscriptionex"
+    }
 }

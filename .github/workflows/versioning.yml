@@ -3,8 +3,19 @@ name: Versioning and Tagging
 on:
   push:
     branches:
-      - dev
-    # This workflow will run for any push to dev, test, or main branches.
+      - main
+
+  # Allow the user to trigger the workflow manually
+  workflow_dispatch:
+    inputs:
+      changeType:
+        required: true
+        type: choice
+        description: 'Specify whether the version change is "major" or "minor"'
+        options:
+          - major
+          - minor
+
 permissions:
   contents: write
 
@@ -18,17 +29,32 @@ jobs:
           fetch-depth: 0  # Fetch all history for tags
 
       - name: Get latest tag and version increment
-        id: version
+        id: versioning
         run: |
+          # Get the latest tag or default to v1.0.0 if none exists
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
           VERSION=${LAST_TAG#v}
           MAJOR=$(echo $VERSION | cut -d '.' -f 1)
           MINOR=$(echo $VERSION | cut -d '.' -f 2)
           PATCH=$(echo $VERSION | cut -d '.' -f 3)
-          # Main branch: Increment MINOR for new feature release
-          MINOR=$((MINOR + 1))
-          PATCH=0  # Reset PATCH for a new minor release
-          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"  
+
+          # Determine the version increment based on user input
+          if [ "${{ github.event.inputs.changeType }}" == "minor" ]; then
+            # Increment MINOR for a minor release
+            MINOR=$((MINOR + 1))
+            PATCH=0  # Reset PATCH for a new minor release
+          elif [ "${{ github.event.inputs.changeType }}" == "major" ]; then
+            # Increment MAJOR for a major release
+            MAJOR=$((MAJOR + 1))
+            MINOR=0  # Reset MINOR for a new major release
+            PATCH=0  # Reset PATCH for a new major release
+          else
+            echo "Invalid changeType. Please specify 'major' or 'minor'."
+            exit 1
+          fi
+
+          # Construct the new version
+          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 

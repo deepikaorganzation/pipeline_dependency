@@ -5,17 +5,6 @@ on:
     branches:
       - main
 
-  # Allow the user to trigger the workflow manually
-  workflow_dispatch:
-    inputs:
-      changeType:
-        required: true
-        type: choice
-        description: 'Specify whether the version change is "major" or "minor"'
-        options:
-          - major
-          - minor
-
 permissions:
   contents: write
 
@@ -28,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for tags
 
-      - name: Get latest tag and version increment
+      - name: Get latest tag and determine version change type
         id: versioning
         run: |
           # Get the latest tag or default to v1.0.0 if none exists
@@ -38,19 +27,18 @@ jobs:
           MINOR=$(echo $VERSION | cut -d '.' -f 2)
           PATCH=$(echo $VERSION | cut -d '.' -f 3)
 
-          # Determine the version increment based on user input
-          if [ "${{ github.event.inputs.changeType }}" == "minor" ]; then
-            # Increment MINOR for a minor release
-            MINOR=$((MINOR + 1))
-            PATCH=0  # Reset PATCH for a new minor release
-          elif [ "${{ github.event.inputs.changeType }}" == "major" ]; then
-            # Increment MAJOR for a major release
+          # Check if any commit message contains "BREAKING CHANGE"
+          COMMIT_MESSAGES=$(git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD)
+          if echo "$COMMIT_MESSAGES" | grep -i "BREAKING CHANGE"; then
+            # If a BREAKING CHANGE is found, it's a major version update
+            echo "Detected BREAKING CHANGE in commit messages"
             MAJOR=$((MAJOR + 1))
-            MINOR=0  # Reset MINOR for a new major release
+            MINOR=0  # Reset MINOR for a major release
             PATCH=0  # Reset PATCH for a new major release
           else
-            echo "Invalid changeType. Please specify 'major' or 'minor'."
-            exit 1
+            # If no BREAKING CHANGE is found, it's a minor version update
+            MINOR=$((MINOR + 1))
+            PATCH=0  # Reset PATCH for a new minor release
           fi
 
           # Construct the new version

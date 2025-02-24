@@ -41,7 +41,7 @@ jobs:
             PATCH=0  # Reset PATCH for a new minor release
           fi
 
-          # Construct the new version
+          # Construct the new version.
           NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV

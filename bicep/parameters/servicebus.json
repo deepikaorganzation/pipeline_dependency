@@ -1,0 +1,6 @@
+{
+    "serivebusName": "myservicebuspocex",
+    "queueName": "myqueueex",
+    "topicName": "mytopicex",
+    "subscriptionName": "mysubscriptionex"
+}

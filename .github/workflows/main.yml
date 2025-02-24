@@ -45,7 +45,7 @@ jobs:
 
   test2:
     needs: deploy-adf
-    uses: ./.github/workflows/storageTable.yaml
+    uses: ./.github/workflows/servicebus.yaml
     with: 
       environment: ${{ github.event.inputs.environment }}
     secrets:

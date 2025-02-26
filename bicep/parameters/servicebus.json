@@ -1,14 +1,16 @@
 {
-    "serviceBusNamespaceName": {
-        "value": "myservicebuspocex"
-    },
-    "serviceBusQueueName": {
-        "value": "myqueueex"
-    },
-    "serviceBusTopicName": {
-        "value": "mytopicex"
-    },
-    "serviceBusSubscriptionName": {
-        "value": "mysubscriptionex"
-    }
+        "serviceBusName": "myServiceBusNamespace",
+        "queues": [
+          { "name": "queue1" },
+          { "name": "queue2" }
+        ],
+        "topics": [
+          { "name": "topic1" },
+          { "name": "topic2" }
+        ],
+        "subscriptions": [
+          { "topicName": "topic1", "name": "subscription1" },
+          { "topicName": "topic2", "name": "subscription2" }
+        ]
 }
+      

@@ -1,0 +1,13 @@
+{
+    "strorageAccountName": "prodstorageaccount",
+    "tables": [
+      "prodtable1",
+      "prodtable2",
+      "prodtable3"
+    ],
+    "containerNames": [
+      "prodcontainer1",
+      "prodcontainer2"
+    ]
+  }
+  

@@ -1,0 +1,13 @@
+{
+    "strorageAccountName": "devstorageaccount",
+    "tables": [
+      "devtable1",
+      "devtable2",
+      "devtable3"
+    ],
+    "containerNames": [
+      "devcontainer1",
+      "devcontainer2"
+    ]
+  }
+  

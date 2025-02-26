@@ -1,4 +1,4 @@
-name: Deploy Azure Storage Table
+name: Deploy Key Vault secret
 
 on:
   workflow_call:
@@ -15,9 +15,6 @@ on:
         required: true
       AZURE_TENANT_ID:
         required: true
-
-env:
-  storageAccountName: $(jq -r ".storageAccountName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -38,18 +35,19 @@ jobs:
                 }
             enable-AzPSSession: true
 
-        
+      - name: replace scerets in Parameters
+        run: |
+            jq --arg sftp "${{ secrets.PIMFEED_COM_SFTP_KEY }}"\
+            --arg accesskey "${{ secrets.PIMFEED_PIM_AWSS3_ACCESSKEYID }}"\
+            --arg notification "${{secrets.NOTIFICATION_EMAILSERVICE_SECRET}}"\
+            '.parameters.secrets.value[0].value = $sftp
+            | .parameters.secrets.value[1].value = $accesskey
+            | .parameters.secrets.value[2].value = $notification' \
+            ./bicep/parameters/keyvault.json > ./bicep/updated-parameter/keyvault.json
+
       - name: Deploy Bicep Template
         run: |
-              # Check if Bicep template exists
-              if [ ! -f ./storageTable.bicep ]; then
-                echo "Bicep template not found!"
-                exit 1
-              fi
-          
-              # Deploy using the Bicep template
-              az deployment group create \
-                --resource-group komatsu-poc \
-                --template-file ./storageTable.bicep
-                --paramters strorageAccountName=$(jq -r ".storageAccountName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
-          
+            az deployment group create \
+            --resource-group komatsu \
+            --template-file ./keyvault.bicep \
+            --parameters @./bicep/updated-parameter/keyvault.json

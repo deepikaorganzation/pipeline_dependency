@@ -1,9 +1,11 @@
 name: Versioning and Tagging
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      change-type:
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -28,10 +30,10 @@ jobs:
           PATCH=$(echo $VERSION | cut -d '.' -f 3)
 
           # Check if any commit message contains "BREAKING CHANGE"
-          COMMIT_MESSAGES=$(git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD)
-          if echo "$COMMIT_MESSAGES" | grep -i "BREAKING CHANGE"; then
+          changetype=${{inputs.change-type}}
+          if echo "$changetype" | grep -i "major"; then
             # If a BREAKING CHANGE is found, it's a major version update
-            echo "Detected BREAKING CHANGE in commit messages"
+            echo "Detected BREAKING CHANGE "
             MAJOR=$((MAJOR + 1))
             MINOR=0  # Reset MINOR for a major release
             PATCH=0  # Reset PATCH for a new major release

@@ -6,12 +6,16 @@ on:
       change-type:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   versioning:
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,6 +24,7 @@ jobs:
           fetch-depth: 0  # Fetch all history for tags
 
       - name: Get latest tag and determine version change type
+        if: 
         id: versioning
         run: |
           # Get the latest tag or default to v1.0.0 if none exists

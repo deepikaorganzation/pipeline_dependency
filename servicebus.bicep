@@ -24,7 +24,19 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
 resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [ for queue in queues: {
   parent: serviceBusNamespace
   name: queue.name
-  properties: {}
+  properties: {
+    lockDuration: 'PT5M'
+    maxSizeInMegabytes: 1024
+    requiresDuplicateDetection: false
+    requiresSession: false
+    defaultMessageTimeToLive: 'P10675199DT2H48M5.4775807S'
+    deadLetteringOnMessageExpiration: true
+    duplicateDetectionHistoryTimeWindow: 'PT10M'
+    maxDeliveryCount: 3
+    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+    enablePartitioning: false
+    enableExpress: false
+}
 }]
 
 

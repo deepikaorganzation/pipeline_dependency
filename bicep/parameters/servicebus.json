@@ -1,5 +1,5 @@
 {
-        "serviceBusName": "myServiceBusNamespace",
+        "serviceBusName": "myServiceBuskxpoc",
         "queues": [
           { "name": "queue1" },
           { "name": "queue2" }

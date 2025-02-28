@@ -35,19 +35,19 @@ jobs:
                 }
             enable-AzPSSession: true
 
-      - name: replace scerets in Parameters
-        run: |
-            jq --arg sftp "${{ secrets.PIMFEED_COM_SFTP_KEY }}"\
-            --arg accesskey "${{ secrets.PIMFEED_PIM_AWSS3_ACCESSKEYID }}"\
-            --arg notification "${{secrets.NOTIFICATION_EMAILSERVICE_SECRET}}"\
-            '.parameters.secrets.value[0].value = $sftp
-            | .parameters.secrets.value[1].value = $accesskey
-            | .parameters.secrets.value[2].value = $notification' \
-            ./bicep/parameters/keyvault.json > ./bicep/updated-parameter/keyvault.json
+    #   - name: replace scerets in Parameters
+    #     run: |
+    #         jq --arg sftp "${{ secrets.PIMFEED_COM_SFTP_KEY }}"\
+    #         --arg accesskey "${{ secrets.PIMFEED_PIM_AWSS3_ACCESSKEYID }}"\
+    #         --arg notification "${{secrets.NOTIFICATION_EMAILSERVICE_SECRET}}"\
+    #         '.parameters.secrets.value[0].value = $sftp
+    #         | .parameters.secrets.value[1].value = $accesskey
+    #         | .parameters.secrets.value[2].value = $notification' \
+    #         ./bicep/parameters/keyvault.json > ./bicep/updated-parameter/keyvault.json
 
-      - name: Deploy Bicep Template
+      - name: Deploy Key Vault Bicep Template
         run: |
             az deployment group create \
-            --resource-group komatsu \
+            --resource-group "komatsupoc" \
             --template-file ./keyvault.bicep \
-            --parameters @./bicep/updated-parameter/keyvault.json
+            --parameters environment='${{ secrets.ENVIRONMENT }}'

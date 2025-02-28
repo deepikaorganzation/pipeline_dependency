@@ -1,18 +1,18 @@
-@description('The name of the key vault')
-param myKeyVault string
+param environment string
+param keyVaultName string = 'kx-poc-${environment}'
+param location string = 'eastus'
 
-@description('SFTP key for PIM feed')
-param secrets array 
-
-
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: myKeyVault
-}
-
-resource keyVaultSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = [for secret in secrets: {
-  parent: keyVault
-  name: secret.name
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: keyVaultName
+  location: location
   properties: {
-    value: secret.value
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: '58be8688-6625-4e52-80d8-c17f3a9ae08a'
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 90
+    accessPolicies: []
   }
-}]
+}

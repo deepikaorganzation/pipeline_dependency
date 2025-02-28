@@ -1,13 +1,31 @@
 {
-    "strorageAccountName": "devstorageaccount",
-    "tables": [
-      "devtable1",
-      "devtable2",
-      "devtable3"
-    ],
-    "containerNames": [
-      "devcontainer1",
-      "devcontainer2"
-    ]
-  }
-  
+  "resourceGroupName": "kac_KX_Integrations_Dev_rg",
+  "strorageAccountName1": "komkxintdataeusdevdl",
+  "tables1": [
+    "AzureFunctionsDiagnosticEvents202412",
+    "AzureFunctionsDiagnosticEvents202501",
+    "komkxintdataeusdevdltable01",
+    "komkxintdataeusdevdltable02",
+    "komkxintdataeusdevdltable03",
+    "komkxintdataeusdevdltable04",
+    "komkxintdataeusdevdltable05",
+    "komkxintdataeusdevdltable06"
+  ],
+  "containers1": [
+    "$logs",
+    "azure-webjobs-hosts",
+    "copyactivity-logs",
+    "error",
+    "inbound",
+    "outbound",
+    "pim-to-adobe",
+    "retrigger"
+  ],
+  "strorageAccountName2": "komkxintappeusdevsa",
+  "tables2": [
+    
+  ],
+  "containers2": [
+    
+  ]
+}

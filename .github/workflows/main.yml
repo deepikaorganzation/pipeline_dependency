@@ -24,19 +24,19 @@ on:
           - minor
 
 jobs:
-  deploy-adf:
-    environment: ${{github.event.inputs.environment}}
-    env:
-        ENV_VAR: ${{github.event.inputs.environment}}
-        pipeline1: "kx-pipeline-${{github.event.inputs.environment}}-1"
-        pipeline2: "kx-pipeline-${{github.event.inputs.environment}}-2"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  # deploy-adf:
+  #   environment: ${{github.event.inputs.environment}}
+  #   env:
+  #       ENV_VAR: ${{github.event.inputs.environment}}
+  #       pipeline1: "kx-pipeline-${{github.event.inputs.environment}}-1"
+  #       pipeline2: "kx-pipeline-${{github.event.inputs.environment}}-2"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
 
-      - name: Install jq
-        run: sudo apt-get install jq
+  #     - name: Install jq
+  #       run: sudo apt-get install jq
 
     
 
@@ -52,7 +52,6 @@ jobs:
   #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   test2:
-    needs: deploy-adf
     uses: ./.github/workflows/servicebus.yaml
     with: 
       environment: ${{ github.event.inputs.environment }}
@@ -63,11 +62,25 @@ jobs:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   test3:
-    needs: test2
-    uses: ./.github/workflows/versioning.yml
+    uses: ./.github/workflows/keyvault.yaml
     with: 
-      change-type: ${{ github.event.inputs.change_type }}
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
+
+  test4:
+    uses: ./.github/workflows/storageTable.yaml
+    with: 
+      environment: ${{ github.event.inputs.environment }}
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   # deploy: 
   #   runs-on: ubuntu-latest
   #   environment: ${{ inputs.environment }}

@@ -1,13 +1,27 @@
 {
-    "strorageAccountName": "prodstorageaccount",
-    "tables": [
-      "prodtable1",
-      "prodtable2",
-      "prodtable3"
-    ],
-    "containerNames": [
-      "prodcontainer1",
-      "prodcontainer2"
+    "storageAccounts": [
+      {
+        "name": "qastorageacct1",
+        "location": "East US",
+        "tables": [
+          { "name": "qatable1" },
+          { "name": "qatable2" }
+        ],
+        "containers": [
+          { "name": "qacontainer1" },
+          { "name": "qacontainer2" }
+        ]
+      },
+      {
+        "name": "qastorageacct2",
+        "location": "East US",
+        "tables": [
+          { "name": "qatable3" }
+        ],
+        "containers": [
+          { "name": "qacontainer3" }
+        ]
+      }
     ]
   }
   

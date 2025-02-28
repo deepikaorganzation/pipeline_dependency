@@ -38,18 +38,26 @@ jobs:
                 }
             enable-AzPSSession: true
 
-        
+      
+  
       - name: Deploy Bicep Template
         run: |
-              # Check if Bicep template exists
-              if [ ! -f ./storageTable.bicep ]; then
-                echo "Bicep template not found!"
-                exit 1
-              fi
+          echo "Deploying resources using Bicep"
+  
+          # Deploy the resources using the az CLI, passing the storage account details as a parameter
+          az deployment group create \
+            --resource-group "komatsupoc" \
+            --template-file ./storageTable.bicep \
+            --parameters @./bicep/parameters/${{ inputs.environment }}StorageTable.json \
           
-              # Deploy using the Bicep template
-              az deployment group create \
-                --resource-group komatsu-poc \
-                --template-file ./storageTable.bicep
-                --paramters strorageAccountName=$(jq -r ".storageAccountName" ./bicep/parameters/${{ inputs.environment }}Parameters.json)
-          
+      # - name: Insert rows into the Azure Table
+      #   run: |
+      #       STORAGE_ACCOUNT_NAME="<your-storage-account-name>"
+      #       TABLE_NAME="mytable"
+      #       CONNECTION_STRING=$(az storage account show-connection-string --name $STORAGE_ACCOUNT_NAME --query connectionString --output tsv)
+
+      #       # Insert rows into the table
+      #       az storage entity insert --connection-string $CONNECTION_STRING --table-name $TABLE_NAME --entity PartitionKey=part1 RowKey=1 name=row1 value=data1
+      #       az storage entity insert --connection-string $CONNECTION_STRING --table-name $TABLE_NAME --entity PartitionKey=part1 RowKey=2 name=row2 value=data2
+      #       az storage entity insert --connection-string $CONNECTION_STRING --table-name $TABLE_NAME --entity PartitionKey=part1 RowKey=3 name=row3 value=data3
+      #       az storage entity insert --connection-string $CONNECTION_STRING --table-name $TABLE_NAME --entity PartitionKey=part1 RowKey=4 name=row4 value=data4

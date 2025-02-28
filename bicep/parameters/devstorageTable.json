@@ -1,27 +1,20 @@
 {
-  "resourceGroupName": "kac_KX_Integrations_Dev_rg",
-  "storageAccountName1": "komkxintdataeusdevdl",
+  "resourceGroupName": "komatsupoc",
+  "storageAccountName1": "kpmdlpoc",
   "tables1": [
-    "AzureFunctionsDiagnosticEvents202412",
-    "AzureFunctionsDiagnosticEvents202501",
-    "komkxintdataeusdevdltable01",
-    "komkxintdataeusdevdltable02",
-    "komkxintdataeusdevdltable03",
-    "komkxintdataeusdevdltable04",
-    "komkxintdataeusdevdltable05",
-    "komkxintdataeusdevdltable06"
+    "komkxidevdltable01",
+    "komkxindevdltable02",
+    "komkxisdevdltable04",
+    "komkxevdltable05",
+    "komkxintddltable06"
   ],
   "containers1": [
-    "$logs",
-    "azure-webjobs-hosts",
-    "copyactivity-logs",
     "error",
     "inbound",
     "outbound",
-    "pim-to-adobe",
     "retrigger"
   ],
-  "storageAccountName2": "komkxintappeusdevsa",
+  "storageAccountName2": "kpmkxdevsa",
   "tables2": [
     
   ],

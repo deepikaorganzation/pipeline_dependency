@@ -45,9 +45,9 @@ jobs:
       - name: Deploy Bicep Template
         run: |
           serviceBusName=$(jq -r '.serviceBusName' ./bicep/parameters/servicebus.json)
-          queues=$(jq -r '.queues | map(.name) | join(",")' ./bicep/parameters/servicebus.json)
-          topics=$(jq -r '.topics | map(.name) | join(",")' ./bicep/parameters/servicebus.json)
-          subscriptions=$(jq -r '.subscriptions | map(.name) | join(",")' ./bicep/parameters/servicebus.json)
+          queues=$(jq -r '.queues | map(.name) | @json' ./bicep/parameters/servicebus.json)
+          topics=$(jq -r '.topics | map(.name) | @json' ./bicep/parameters/servicebus.json)
+          subscriptions=$(jq -r '.subscriptions | map(.name) | @json' ./bicep/parameters/servicebus.json)
 
           az deployment group create \
             --resource-group komatsu-poc \

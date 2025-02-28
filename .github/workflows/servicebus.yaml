@@ -44,8 +44,13 @@ jobs:
       # Deploy Bicep template
       - name: Deploy Bicep Template
         run: |
+          serviceBusName=$(jq -r '.serviceBusName' input.json)
+          queues=$(jq -r '.queues | map(.name) | join(",")' input.json)
+          topics=$(jq -r '.topics | map(.name) | join(",")' input.json)
+          subscriptions=$(jq -r '.subscriptions | map(.name) | join(",")' input.json)
+
           az deployment group create \
             --resource-group komatsu-poc \
             --template-file ./servicebus.bicep \
-            --parameters @./bicep/parameters/servicebus.json
+            --parameters serviceBusName=$serviceBusName queues=$queues topics=$topics subscriptions=$subscriptions
 

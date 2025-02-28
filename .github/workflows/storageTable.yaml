@@ -48,7 +48,7 @@ jobs:
           az deployment group create \
             --resource-group "komatsupoc" \
             --template-file ./storageTable.bicep \
-            --parameters @./bicep/parameters/${{ inputs.environment }}StorageTable.json \
+            --parameters @./bicep/parameters/${{ inputs.environment }}storageTable.json \
           
       # - name: Insert rows into the Azure Table
       #   run: |

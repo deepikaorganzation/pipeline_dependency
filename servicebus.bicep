@@ -24,7 +24,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
 // Create Service Bus Queue
 resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [ for queue in queues: {
   parent: serviceBusNamespace
-  name: queue.name
+  name: queue
   properties: {
     lockDuration: 'PT5M'
     maxSizeInMegabytes: 1024
@@ -43,7 +43,7 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 // Create Topics
 resource mytopicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' = [for topic in topics: {
   parent: serviceBusNamespace
-  name: topic.name
+  name: topic
   properties: {
     // Add topic-specific properties here if needed
   }

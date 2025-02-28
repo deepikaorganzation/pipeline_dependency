@@ -1,8 +1,8 @@
 param serviceBusName string
 param queues array
 param location string = resourceGroup().location
-param topics array
-param subscriptions array
+param topic string
+param subscription string
 
 param tags object = {
   Application: 'API'
@@ -41,19 +41,19 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 }]
 
 // Create Topics
-resource mytopicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' = [for topic in topics: {
+resource topicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' =  {
   parent: serviceBusNamespace
   name: topic
   properties: {
-    // Add topic-specific properties here if needed
+    // Add any topic-specific properties if needed
   }
-}]
+}
 
-// Create Subscriptions
-resource subscriptionResource 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2024-01-01' = [for sub in subscriptions: {
-  parent: mytopicResource[sub.topicName]
-  name: '${sub.name}'
+// Create Subscriptions for each Topic
+resource subscriptionResource 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2024-01-01' = {
+  name: subscription
+  parent: topicResource
   properties: {
     // Add subscription-specific properties if needed
   }
-}]
+}

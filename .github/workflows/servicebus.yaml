@@ -54,6 +54,6 @@ jobs:
             --template-file ./servicebus.bicep \
             --parameters serviceBusName="$serviceBusName" \
               queues="$queues" \
-              topics="$topics" \
-              subscriptions="$subscriptions"
+              topic="$topics" \
+              subscription="$subscriptions"
 

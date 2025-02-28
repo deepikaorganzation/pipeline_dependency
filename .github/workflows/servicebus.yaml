@@ -50,7 +50,7 @@ jobs:
           subscriptions=$(jq -r '.subscriptions | map(.name) | @json' ./bicep/parameters/servicebus.json)
 
           az deployment group create \
-            --resource-group komatsu-poc \
+            --resource-group komatsupoc \
             --template-file ./servicebus.bicep \
             --parameters serviceBusName=$serviceBusName queues=$queues topics=$topics subscriptions=$subscriptions
 

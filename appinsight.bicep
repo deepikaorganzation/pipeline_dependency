@@ -1,4 +1,4 @@
-param environment string = 'DEV' // Environment parameter
+param environment string // Environment parameter
 param region string = 'eastus' // Region parameter
 param applicationInsightsName string // Application Insights Name
 param workspaceResourceId string // Log Analytics Workspace Resource ID
@@ -11,7 +11,7 @@ resource appInsights 'microsoft.insights/components@2020-02-02' = {
   tags: {
     Company: 'KAC'
     Environment: environment
-    Project: 'Komatsu Experience (KX)'
+    Project: 'poc'
   }
   properties: {
     Application_Type: 'web'

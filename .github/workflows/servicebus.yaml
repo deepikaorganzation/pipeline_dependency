@@ -45,15 +45,14 @@ jobs:
       - name: Deploy Bicep Template
         run: |
           serviceBusName=$(jq -r '.serviceBusName' ./bicep/parameters/servicebus.json)
-          queues=$(jq -r '.queues | map(.name)' ./bicep/parameters/servicebus.json)
-          topics=$(jq -r '.topics | map(.name)' ./bicep/parameters/servicebus.json)
-          subscriptions=$(jq -r '.subscriptions | map(.name)' ./bicep/parameters/servicebus.json)
+          queues=$(jq -r '.queues | map(.name) | @csv' ./bicep/parameters/servicebus.json | tr -d '"')
+          topic=$(jq -r '.topics[0].name' ./bicep/parameters/servicebus.json)
+          subscription=$(jq -r '.subscriptions[0].name' ./bicep/parameters/servicebus.json)
 
           az deployment group create \
             --resource-group komatsupoc \
             --template-file ./servicebus.bicep \
             --parameters serviceBusName="$serviceBusName" \
-              queues="$queues" \
-              topic="$topics" \
-              subscription="$subscriptions"
-
+              queues="[$queues]" \
+              topic="$topic" \
+              subscription="$subscription"

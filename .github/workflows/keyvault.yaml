@@ -50,4 +50,4 @@ jobs:
             az deployment group create \
             --resource-group "komatsupoc" \
             --template-file ./keyvault.bicep \
-            --parameters environment='${{ secrets.ENVIRONMENT }}'
+            --parameters environment='${{ inputs.ENVIRONMENT }}'

@@ -1,6 +1,6 @@
 {
   "resourceGroupName": "kac_KX_Integrations_Dev_rg",
-  "strorageAccountName1": "komkxintdataeusdevdl",
+  "storageAccountName1": "komkxintdataeusdevdl",
   "tables1": [
     "AzureFunctionsDiagnosticEvents202412",
     "AzureFunctionsDiagnosticEvents202501",
@@ -21,7 +21,7 @@
     "pim-to-adobe",
     "retrigger"
   ],
-  "strorageAccountName2": "komkxintappeusdevsa",
+  "storageAccountName2": "komkxintappeusdevsa",
   "tables2": [
     
   ],

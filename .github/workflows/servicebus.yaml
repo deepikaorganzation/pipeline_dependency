@@ -45,7 +45,7 @@ jobs:
       - name: Deploy Bicep Template
         run: |
           serviceBusName=$(jq -r '.serviceBusName' ./bicep/parameters/servicebus.json)
-          queues=$(jq -r '.queues | map(.name)' ./bicep/parameters/servicebus.json | tr -d '"')
+          queues=$(jq '.queues | map(.name)' ./bicep/parameters/servicebus.json)
           topic=$(jq -r '.topics[0].name' ./bicep/parameters/servicebus.json)
           subscription=$(jq -r '.subscriptions[0].name' ./bicep/parameters/servicebus.json)
 

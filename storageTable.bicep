@@ -121,10 +121,14 @@ param containers1 array = [
   'container2'
 ]
 
-
+resource blobStorage1 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: storageAccount1
+  name: 'default'
+}
 @description('Create containers in existing storage account')
 resource storageContainers1 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for containerName in containers1:{
-  name: 'default/${containerName}'
+  parent: blobStorage1
+  name: containerName
   properties:{
     publicAccess : 'None'
   }
@@ -145,10 +149,14 @@ resource tableService2 'Microsoft.Storage/storageAccounts/tableServices/tables@2
 param containers2 array = [
 ]
 
-
+resource blobStorage2 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: storageAccount2
+  name: 'default'
+}
 @description('Create containers in existing storage account')
 resource storageContainers2 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for containerName in containers2:{
-  name: 'default/${containerName}'
+  parent: blobStorage2
+  name: containerName
   properties:{
     publicAccess : 'None'
   }

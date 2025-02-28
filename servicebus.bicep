@@ -8,6 +8,7 @@ param tags object = {
   Application: 'API'
   Company: 'KMC'
 }
+
 // Create Service Bus Namespace
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
   name: serviceBusName
@@ -39,9 +40,7 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 }
 }]
 
-
-
-
+// Create Topics
 resource mytopicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' = [for topic in topics: {
   parent: serviceBusNamespace
   name: topic.name
@@ -50,11 +49,11 @@ resource mytopicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' = [
   }
 }]
 
+// Create Subscriptions
 resource subscriptionResource 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2024-01-01' = [for sub in subscriptions: {
-  name: '${serviceBusNamespace.name}/${sub.topicName}/${sub.name}'
+  parent: mytopicResource[sub.topicName]
+  name: '${sub.name}'
   properties: {
     // Add subscription-specific properties if needed
   }
 }]
-
-

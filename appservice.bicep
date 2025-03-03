@@ -1,9 +1,9 @@
 param appServicePlanName string = 'kom-kx1-eus-dev-sp'
 param location string = 'East US'
 param capacity int = 1
-param skuName string = 'B1'
-param skuTier string = 'Basic'
-param skuFamily string = 'B'
+param skuName string = 'S1'
+param skuTier string = 'Standard'
+param skuFamily string = 'S'
 param targetWorkerCount int = 2
 param perSiteScaling bool = false
 param elasticScaleEnabled bool = false

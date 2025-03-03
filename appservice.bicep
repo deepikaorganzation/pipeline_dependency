@@ -1,5 +1,5 @@
 param appServicePlanName string = 'kom-kx1-eus-dev-sp'
-param location string = 'West US'
+param location string = 'Central US'
 param capacity int = 1
 param skuName string = 'S1'
 param skuTier string = 'Standard'

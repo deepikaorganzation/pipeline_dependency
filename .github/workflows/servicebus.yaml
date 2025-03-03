@@ -57,5 +57,5 @@ jobs:
               queues="$queues" \
               topics="$topic" \
               subscriptions="$subscription" \
-              supportOrdering=$supportOrdering
+              supportOrdering="$supportOrdering"
 

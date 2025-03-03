@@ -5,12 +5,8 @@
           { "name": "queue2" }
         ],
         "topics": [
-          { "name": "topic1" },
-          { "name": "topic2" }
-        ],
-        "subscriptions": [
-          {"name": "subscription1" },
-          {"name": "subscription2" }
+          { "name": "topic1", "subscriptions":  "subscription1",  "supportOrdering": true },
+          { "name": "topic2", "subscriptions":  "subscription2",  "supportOrdering": false }
         ]
 }
       

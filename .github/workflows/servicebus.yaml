@@ -47,12 +47,13 @@ jobs:
           serviceBusName=$(jq -r '.serviceBusName' ./bicep/parameters/servicebus.json)
           queues=$(jq '.queues | map(.name)' ./bicep/parameters/servicebus.json)
           topic=$(jq -r '.topics | map(.name)' ./bicep/parameters/servicebus.json)
-          subscription=$(jq -r '.subscriptions | map(.name)' ./bicep/parameters/servicebus.json)
-
+          subscription=$(jq -r '.topics | map(.subscriptions)' ./bicep/parameters/servicebus.json)
+          supportOrdering=$(jq -r '.topics | map(.supportOrdering)' ./bicep/parameters/servicebus.json)
           az deployment group create \
             --resource-group komatsupoc \
             --template-file ./servicebus.bicep \
             --parameters serviceBusName="$serviceBusName" \
               queues="$queues" \
               topics="$topic" \
-              subscriptions="$subscription"
+              subscriptions="$subscription" \
+              supportOrdering=$supportOrdering

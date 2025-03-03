@@ -57,6 +57,16 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 // }
 resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in topics: {
   name: '${serviceBusName}/${topic}'
+    properties: {
+    defaultMessageTimeToLive: 'P14D'
+    maxMessageSizeInKilobytes: 1024
+    maxSizeInMegabytes: 1024
+    duplicateDetectionHistoryTimeWindow: 'PT10M'
+    supportOrdering: supportOrdering
+    enableBatchedOperations: true
+    autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+    // Add any topic-specific properties if needed
+  }
 }]
 
 // Create Subscriptions for each Topic

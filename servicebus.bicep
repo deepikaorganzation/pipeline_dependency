@@ -10,21 +10,20 @@ param tags object = {
 }
 
 // Create Service Bus Namespace
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
-  name: serviceBusName
-  location: location
-  sku: {
-    name: 'Premium'
-    tier: 'Premium'
-    capacity: 1
-  }
-  tags: tags
-}
+// resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
+//   name: serviceBusName
+//   location: location
+//   sku: {
+//     name: 'Premium'
+//     tier: 'Premium'
+//     capacity: 1
+//   }
+//   tags: tags
+// }
 
 // Create Service Bus Queue
 resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [ for queue in queues: {
-  parent: serviceBusNamespace
-  name: queue
+  name: '${serviceBusName}/${queue}'
   properties: {
     lockDuration: 'PT5M'
     maxSizeInMegabytes: 1024

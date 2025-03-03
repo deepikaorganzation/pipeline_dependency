@@ -41,8 +41,8 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 
 // Create Topics
 resource topicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' =  {
-  parent: serviceBusNamespace
-  name: topic
+
+  name: '${serviceBusName}/${topic}'
   properties: {
     // Add any topic-specific properties if needed
   }

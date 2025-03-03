@@ -5,9 +5,11 @@
           { "name": "queue2" }
         ],
         "topics": [
-          { "name": "topic1" }
+          { "name": "topic1" },
+          { "name": "topic2" }
         ],
         "subscriptions": [
+          {"name": "subscription1" },
           {"name": "subscription1" }
         ]
 }

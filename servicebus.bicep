@@ -1,8 +1,9 @@
 param serviceBusName string
 param queues array
 param location string = resourceGroup().location
-param topic string
-param subscription string
+param topics array
+param subscriptions array
+param supportOrdering bool = false
 
 param tags object = {
   Application: 'API'
@@ -40,19 +41,28 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 }]
 
 // Create Topics
-resource topicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' =  {
+// resource topicResource 'Microsoft.ServiceBus/namespaces/topics@2024-01-01' =  {
 
-  name: '${serviceBusName}/${topic}'
-  properties: {
-    // Add any topic-specific properties if needed
-  }
-}
+//   name: '${serviceBusName}/${topics}'
+//   properties: {
+//     defaultMessageTimeToLive: 'P14D'
+//     maxMessageSizeInKilobytes: 1024
+//     maxSizeInMegabytes: 1024
+//     duplicateDetectionHistoryTimeWindow: 'PT10M'
+//     supportOrdering: supportOrdering
+//     enableBatchedOperations: true
+//     autoDeleteOnIdle: 'P10675199DT2H48M5.4775807S'
+//     // Add any topic-specific properties if needed
+//   }
+// }
+resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in topics: {
+  name: '${serviceBusName}/${topic.name}'
+}]
 
 // Create Subscriptions for each Topic
-resource subscriptionResource 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2024-01-01' = {
-  name: subscription
-  parent: topicResource
-  properties: {
-    // Add subscription-specific properties if needed
-  }
-}
+resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for (topic,idx) in topics:  {
+  name: '${serviceBusName}/${topic.name}/${subscriptions[idx]}'
+  dependsOn: [
+    topicResources
+  ]
+}]

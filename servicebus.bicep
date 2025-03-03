@@ -56,12 +56,12 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 //   }
 // }
 resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in topics: {
-  name: '${serviceBusName}/${topic.name}'
+  name: '${serviceBusName}/${topic}'
 }]
 
 // Create Subscriptions for each Topic
 resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for (topic,idx) in topics:  {
-  name: '${serviceBusName}/${topic.name}/${subscriptions[idx]}'
+  name: '${serviceBusName}/${topic}/${subscriptions[idx]}'
   dependsOn: [
     topicResources
   ]

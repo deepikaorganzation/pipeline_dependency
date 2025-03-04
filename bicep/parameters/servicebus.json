@@ -1,5 +1,6 @@
 {
-  "serivceBus": [{
+  "serivceBus": [
+    {
     "serviceBusName": "myServiceBuskxpoc",
     "queues": [
       {

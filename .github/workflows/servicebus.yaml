@@ -52,8 +52,8 @@ jobs:
           
           # Deploy using Bicep
           az deployment group create \
-            --resource-group <resource-group-name> \
-            --template-file ./main.bicep \
+            --resource-group "komatsupoc" \
+            --template-file ./servicebus.bicep \
             --parameters serviceBusName="$serviceBusName" \
                           location="$location" \
                           queues="$queues" \

@@ -27,7 +27,10 @@
         "department": "data",
         "product": "komkxint"
       },
-      "sku": "Standard_LRS",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"  
+      },
       "kind": "StorageV2",
       "properties": {
         "defaultToOAuthAuthentication": true,
@@ -49,7 +52,10 @@
         "department": "data",
         "product": "komkxint"
       },
-      "sku": "Standard_LRS",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"  
+      },
       "kind": "StorageV2",
       "properties": {
         "dnsEndpointType": "Standard",

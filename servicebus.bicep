@@ -33,7 +33,7 @@ resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [f
 
 // Create Subscriptions for each Topic
 resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for (topic,idx) in topics: {
-  name: '${serviceBusName}/${topic.name}/${topic.subscriptionName}'
+  name: '${serviceBusName}/${topic.name}/${topic.subscriptions.subscriptionName}'
   dependsOn: [
     topicResources
   ]

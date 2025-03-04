@@ -45,7 +45,11 @@
           "duplicateDetectionHistoryTimeWindow": "PT10M",
           "enableBatchedOperations": true,
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
-        }
+        },
+        "subscriptions": [
+        { "subscriptionName": "subscription1" },
+        { "subscriptionName": "subscription2" }
+      ]
       },
       {
         "name": "topic2",
@@ -58,12 +62,11 @@
           "duplicateDetectionHistoryTimeWindow": "PT15M",
           "enableBatchedOperations": false,
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
-        }
+        },
+        "subscriptions": [
+        { "subscriptionName": "subscription3" }
+      ]
       }
-    ],
-    "subscriptions": [
-      { "topic": "topic1", "subscriptionName": "subscription1" },
-      { "topic": "topic2", "subscriptionName": "subscription2" }
     ],
     "tags": {
       "Application": "API",

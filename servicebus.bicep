@@ -2,7 +2,6 @@ param serviceBusName string
 param queues array
 param location string = resourceGroup().location
 param topics array
-param subscriptions array
 
 // Create Service Bus Namespace (if required, uncomment the block below)
 // resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
@@ -29,8 +28,8 @@ resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [f
 }]
 
 // Create Subscriptions for each Topic
-resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for (topic, idx) in topics: {
-  name: '${serviceBusName}/${topic.name}/${subscriptions[idx].subscriptionName}'
+resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for (topic,idx) in topics: {
+  name: '${serviceBusName}/${topic.name}/${topic.subscriptionName}'
   dependsOn: [
     topicResources
   ]

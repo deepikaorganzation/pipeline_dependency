@@ -45,7 +45,6 @@ jobs:
       - name: Deploy Bicep Template
         run: |
           serviceBusName=$(jq -r '.serivceBus[0].serviceBusName' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-          location=$(jq -r '.serivceBus[0].location' ./bicep/parameters/${{inputs.environment}}storageTable.json)
           queues=$(jq -c '.serivceBus[0].queues' ./bicep/parameters/${{inputs.environment}}storageTable.json)
           topics=$(jq -c '.serivceBus[0].topics' ./bicep/parameters/${{inputs.environment}}storageTable.json)
           tags=$(jq -c '.serivceBus[0].tags' ./bicep/parameters/${{inputs.environment}}storageTable.json)
@@ -55,7 +54,6 @@ jobs:
             --resource-group "komatsupoc" \
             --template-file ./servicebus.bicep \
             --parameters serviceBusName="$serviceBusName" \
-                          location="$location" \
                           queues="$queues" \
                           topics="$topics" \
                           tags="$tags"

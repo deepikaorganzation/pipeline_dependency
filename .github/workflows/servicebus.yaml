@@ -44,11 +44,11 @@ jobs:
       # Deploy Bicep template
       - name: Deploy Bicep Template
         run: |
-          serviceBusName=$(jq -r '.serivceBus[0].serviceBusName' ./parameters/parameter.json)
-          location=$(jq -r '.serivceBus[0].location' ./parameters/parameter.json)
-          queues=$(jq -c '.serivceBus[0].queues' ./parameters/parameter.json)
-          topics=$(jq -c '.serivceBus[0].topics' ./parameters/parameter.json)
-          tags=$(jq -c '.serivceBus[0].tags' ./parameters/parameter.json)
+          serviceBusName=$(jq -r '.serivceBus[0].serviceBusName' ./bicep/parameters/${{inputs.environment}}storageTable.json)
+          location=$(jq -r '.serivceBus[0].location' ./bicep/parameters/${{inputs.environment}}storageTable.json)
+          queues=$(jq -c '.serivceBus[0].queues' ./bicep/parameters/${{inputs.environment}}storageTable.json)
+          topics=$(jq -c '.serivceBus[0].topics' ./bicep/parameters/${{inputs.environment}}storageTable.json)
+          tags=$(jq -c '.serivceBus[0].tags' ./bicep/parameters/${{inputs.environment}}storageTable.json)
           
           # Deploy using Bicep
           az deployment group create \

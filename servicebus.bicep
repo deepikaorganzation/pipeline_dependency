@@ -2,6 +2,10 @@ param serviceBusName string
 param queues array
 param location string = resourceGroup().location
 param topics array
+param tags object = {
+  Application: 'API'
+  Company: 'KMC'
+}
 
 // Create Service Bus Namespace (if required, uncomment the block below)
 // resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {

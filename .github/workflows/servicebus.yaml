@@ -44,15 +44,19 @@ jobs:
       # Deploy Bicep template
       - name: Deploy Bicep Template
         run: |
-          serviceBusName=$(jq -r '.serviceBusName' ./bicep/parameters/servicebus.json)
-          queues=$(jq -r '.queues' ./bicep/parameters/servicebus.json)
-          topic=$(jq -r '.topics' ./bicep/parameters/servicebus.json)
+          serviceBusName=$(jq -r '.serivceBus[0].serviceBusName' ./parameters/parameter.json)
+          location=$(jq -r '.serivceBus[0].location' ./parameters/parameter.json)
+          queues=$(jq -c '.serivceBus[0].queues' ./parameters/parameter.json)
+          topics=$(jq -c '.serivceBus[0].topics' ./parameters/parameter.json)
+          tags=$(jq -c '.serivceBus[0].tags' ./parameters/parameter.json)
           
-
+          # Deploy using Bicep
           az deployment group create \
-            --resource-group komatsupoc \
-            --template-file ./servicebus.bicep \
+            --resource-group <resource-group-name> \
+            --template-file ./main.bicep \
             --parameters serviceBusName="$serviceBusName" \
-              queues="$queues" \
-              topics="$topic" \
+                          location="$location" \
+                          queues="$queues" \
+                          topics="$topics" \
+                          tags="$tags"
 

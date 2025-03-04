@@ -44,19 +44,13 @@ jobs:
         run: |
               # Extract values using jq
               resourceGroupName=$(jq -r '.resourceGroupName' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              storageAccountName1=$(jq -r '.storageAccountName1' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              tables1=$(jq -r '.tables1 | @json' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              containers1=$(jq -r '.containers1 | @json' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              storageAccountName2=$(jq -r '.storageAccountName2' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              tables2=$(jq -r '.tables2 | @json' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-              containers2=$(jq -r '.containers2 | @json' ./bicep/parameters/${{inputs.environment}}storageTable.json)
+              storageAccounts=$(jq -r '.storageAccounts' ./bicep/parameters/${{inputs.environment}}storageTable.json)
           
               # Deploy using az CLI, passing the parameters as JSON arrays
               az deployment group create \
                 --resource-group "komatsupoc" \
                 --template-file ./storageTable.bicep \
-                --parameters storageAccountName1=$storageAccountName1 tables1=$tables1 containers1=$containers1 \
-                             storageAccountName2=$storageAccountName2 tables2=$tables2 containers2=$containers2
+                --parameters storageAccouns="$storageAccounts" \
           
           
       # - name: Insert rows into the Azure Table

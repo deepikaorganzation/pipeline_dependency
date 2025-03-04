@@ -1,12 +1,73 @@
 {
-        "serviceBusName": "myServiceBuskxpoc",
-        "queues": [
-          { "name": "queue1" },
-          { "name": "queue2" }
-        ],
-        "topics": [
-          { "name": "topic1", "subscriptions":  "subscription1",  "supportOrdering": true },
-          { "name": "topic2", "subscriptions":  "subscription2",  "supportOrdering": false }
-        ]
+  "serivceBus": [{
+    "serviceBusName": "myServiceBuskxpoc",
+    "queues": [
+      {
+        "name": "queue1",
+        "properties": {
+          "lockDuration": "PT5M",
+          "maxSizeInMegabytes": 1024,
+          "requiresDuplicateDetection": false,
+          "requiresSession": false,
+          "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+          "deadLetteringOnMessageExpiration": true,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "maxDeliveryCount": 3,
+          "enablePartitioning": false,
+          "enableExpress": false
+        }
+      },
+      {
+        "name": "queue2",
+        "properties": {
+          "lockDuration": "PT10M",
+          "maxSizeInMegabytes": 2048,
+          "requiresDuplicateDetection": true,
+          "requiresSession": true,
+          "defaultMessageTimeToLive": "P14D",
+          "deadLetteringOnMessageExpiration": true,
+          "duplicateDetectionHistoryTimeWindow": "PT5M",
+          "maxDeliveryCount": 5,
+          "enablePartitioning": true,
+          "enableExpress": true
+        }
+      }
+    ],
+    "topics": [
+      {
+        "name": "topic1",
+        
+        "properties": {
+          "supportOrdering": true,
+          "defaultMessageTimeToLive": "P14D",
+          "maxMessageSizeInKilobytes": 256,
+          "maxSizeInMegabytes": 1024,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "enableBatchedOperations": true,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+        }
+      },
+      {
+        "name": "topic2",
+        
+        "properties": {
+          "supportOrdering": false,
+          "defaultMessageTimeToLive": "P7D",
+          "maxMessageSizeInKilobytes": 512,
+          "maxSizeInMegabytes": 2048,
+          "duplicateDetectionHistoryTimeWindow": "PT15M",
+          "enableBatchedOperations": false,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+        }
+      }
+    ],
+    "subscriptions": [
+      { "topic": "topic1", "subscriptionName": "subscription1" },
+      { "topic": "topic2", "subscriptionName": "subscription2" }
+    ],
+    "tags": {
+      "Application": "API",
+      "Company": "KMC"
+    }
+  }]
 }
-      

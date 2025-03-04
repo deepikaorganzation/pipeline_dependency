@@ -1,24 +1,73 @@
 {
-  "resourceGroupName": "komatsupoc",
-  "storageAccountName1": "kpmdlpoc",
-  "tables1": [
-    "komkxidevdltable01",
-    "komkxindevdltable02",
-    "komkxisdevdltable04",
-    "komkxevdltable05",
-    "komkxintddltable06"
-  ],
-  "containers1": [
-    "error",
-    "inbound",
-    "outbound",
-    "retrigger"
-  ],
-  "storageAccountName2": "kpmkxdevsa",
-  "tables2": [
-    
-  ],
-  "containers2": [
-    
+  "storageAccounts": [
+    {
+      "name": "komkxintdataeusdevdl1",
+      "tables": [
+        "AzureFunctionsDiagnosticEvents202412",
+        "AzureFunctionsDiagnosticEvents202501",
+        "komkxintdataeusdevdltable01",
+        "komkxintdataeusdevdltable02",
+        "komkxintdataeusdevdltable03",
+        "komkxintdataeusdevdltable04",
+        "komkxintdataeusdevdltable05",
+        "komkxintdataeusdevdltable06"
+      ],
+      "containers": [
+        "$logs",
+        "azure-webjobs-hosts",
+        "copyactivity-logs",
+        "error",
+        "inbound",
+        "outbound",
+        "pim-to-adobe",
+        "retrigger"
+      ],
+      "tags": {
+        "environment": "dev",
+        "department": "data",
+        "product": "komkxint"
+      },
+      "sku": "Standard_LRS",
+      "kind": "StorageV2",
+      "properties": {
+        "defaultToOAuthAuthentication": true,
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "networkAcls": "networkAcls1",
+        "supportsHttpsTrafficOnly": true,
+        "encryption": "encryption1",
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "name": "komkxintappeusdevsa1",
+      "tables": [],
+      "containers": [],
+      "tags": {
+        "environment": "dev",
+        "department": "data",
+        "product": "komkxint"
+      },
+      "sku": "Standard_LRS",
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Enabled",
+        "allowCrossTenantReplication": false,
+        "isLocalUserEnabled": true,
+        "isSftpEnabled": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": true,
+        "allowSharedKeyAccess": true,
+        "largeFileSharesState": "Enabled",
+        "isHnsEnabled": true,
+        "networkAcls": "networkAcls2",
+        "supportsHttpsTrafficOnly": true,
+        "encryption": "encryption2",
+        "accessTier": "Cool"
+      }
+    }
   ]
 }

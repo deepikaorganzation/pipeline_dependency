@@ -5,9 +5,7 @@ param storageAccounts array
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = [for storageAccountObj in storageAccounts: {
   name: storageAccountObj.name
   location: location
-  sku: {
-    name: storageAccountObj.sku.name
-  }
+  sku: storageAccountObj.sku
   kind: storageAccountObj.kind
   tags: storageAccountObj.tags
   properties: {

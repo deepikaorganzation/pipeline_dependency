@@ -21,7 +21,7 @@
       {
         "name": "queue2",
         "properties": {
-          "lockDuration": "PT10M",
+          "lockDuration": "PT5M",
           "maxSizeInMegabytes": 2048,
           "requiresDuplicateDetection": true,
           "requiresSession": true,
@@ -56,7 +56,7 @@
         "properties": {
           "supportOrdering": false,
           "defaultMessageTimeToLive": "P7D",
-          "maxMessageSizeInKilobytes": 512,
+          "maxMessageSizeInKilobytes": 256,
           "maxSizeInMegabytes": 2048,
           "duplicateDetectionHistoryTimeWindow": "PT15M",
           "enableBatchedOperations": false,

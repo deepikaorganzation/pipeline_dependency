@@ -26,7 +26,7 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 }]
 
 var filteredTopics = [for topic in items(topics): topic.value]
-var flattenedSubscriptions = [for sub in filteredTopics: sub.subscription]
+var flattenedSubscriptions = [for sub in filteredTopics: sub.subscriptions]
 // Create Topics
 resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in filteredTopics: {
   name: '${serviceBusName}/${topic.name}'

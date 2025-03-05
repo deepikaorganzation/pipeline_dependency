@@ -22,15 +22,15 @@
         "name": "queue2",
         "properties": {
           "lockDuration": "PT5M",
-          "maxSizeInMegabytes": 2048,
+          "maxSizeInMegabytes": 1024,
           "requiresDuplicateDetection": true,
           "requiresSession": true,
           "defaultMessageTimeToLive": "P14D",
           "deadLetteringOnMessageExpiration": true,
           "duplicateDetectionHistoryTimeWindow": "PT5M",
           "maxDeliveryCount": 5,
-          "enablePartitioning": true,
-          "enableExpress": true
+          "enablePartitioning": false,
+          "enableExpress": false
         }
       }
     ],

@@ -23,12 +23,12 @@
         "properties": {
           "lockDuration": "PT5M",
           "maxSizeInMegabytes": 1024,
-          "requiresDuplicateDetection": true,
-          "requiresSession": true,
-          "defaultMessageTimeToLive": "P14D",
+          "requiresDuplicateDetection": false,
+          "requiresSession": false,
+          "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
           "deadLetteringOnMessageExpiration": true,
-          "duplicateDetectionHistoryTimeWindow": "PT5M",
-          "maxDeliveryCount": 5,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "maxDeliveryCount": 3,
           "enablePartitioning": false,
           "enableExpress": false
         }

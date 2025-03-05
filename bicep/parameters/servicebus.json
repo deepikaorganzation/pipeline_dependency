@@ -36,6 +36,7 @@
     ],
     "topics": {
       "topic1":{
+        "name": "topic1",
         "properties": {
           "supportOrdering": true,
           "defaultMessageTimeToLive": "P14D",
@@ -51,6 +52,7 @@
       ]
       },
       "topic2":{
+        "name": "topic2",
         "properties": {
           "supportOrdering": false,
           "defaultMessageTimeToLive": "P7D",

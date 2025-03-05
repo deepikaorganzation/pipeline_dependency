@@ -32,9 +32,28 @@
         "allowCrossTenantReplication": false,
         "minimumTlsVersion": "TLS1_2",
         "allowBlobPublicAccess": false,
-        "networkAcls": "networkAcls1",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
         "supportsHttpsTrafficOnly": true,
-        "encryption": "encryption1",
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
         "accessTier": "Hot"
       }
     },
@@ -64,9 +83,28 @@
         "allowSharedKeyAccess": true,
         "largeFileSharesState": "Enabled",
         "isHnsEnabled": true,
-        "networkAcls": "networkAcls2",
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
         "supportsHttpsTrafficOnly": true,
-        "encryption": "encryption2",
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
         "accessTier": "Cool"
       }
     }

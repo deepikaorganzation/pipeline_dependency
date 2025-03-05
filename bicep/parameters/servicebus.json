@@ -48,8 +48,8 @@
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
         },
         "subscriptions": [
-        { "subscriptionName": "subscription1" },
-        { "subscriptionName": "subscription2" }
+        {"topic": "topic1", "subscriptionName": "subscription1" },
+        {"topic": "topic1",  "subscriptionName": "subscription2" }
       ]
       },
       {
@@ -65,7 +65,7 @@
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
         },
         "subscriptions": [
-        { "subscriptionName": "subscription3" }
+        {"topic": "topic2", "subscriptionName": "subscription3" }
       ]
       }
     ],

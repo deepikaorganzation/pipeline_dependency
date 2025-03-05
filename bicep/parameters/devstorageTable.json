@@ -3,8 +3,6 @@
     {
       "name": "komkxintdataeusdevdl1",
       "tables": [
-        "AzureFunctionsDiagnosticEvents202412",
-        "AzureFunctionsDiagnosticEvents202501",
         "komkxintdataeusdevdltable01",
         "komkxintdataeusdevdltable02",
         "komkxintdataeusdevdltable03",
@@ -13,9 +11,6 @@
         "komkxintdataeusdevdltable06"
       ],
       "containers": [
-        "$logs",
-        "azure-webjobs-hosts",
-        "copyactivity-logs",
         "error",
         "inbound",
         "outbound",

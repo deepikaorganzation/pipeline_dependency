@@ -57,7 +57,7 @@
           "supportOrdering": false,
           "defaultMessageTimeToLive": "P7D",
           "maxMessageSizeInKilobytes": 256,
-          "maxSizeInMegabytes": 2048,
+          "maxSizeInMegabytes": 1024,
           "duplicateDetectionHistoryTimeWindow": "PT15M",
           "enableBatchedOperations": false,
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"

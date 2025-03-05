@@ -25,17 +25,23 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
   properties: queue.properties
 }]
 
-var filteredTopics = [for topic in items(topics): topic.value]
-var flattenedSubscriptions = [for sub in filteredTopics: sub.subscriptions]
+
+var flattenedSubscriptions = [for topic in topics: [
+  for subscription in topic.value.subscriptions: {
+    topicName: topic.value.name
+    subscriptionName: subscription.subscriptionName
+  }
+]].flatten()
+
 // Create Topics
-resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in filteredTopics: {
-  name: '${serviceBusName}/${topic.name}'
-  properties: topic.properties
+resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in topics: {
+  name: '${serviceBusName}/${topic.value.name}'
+  properties: topic.value.properties
 }]
 
 // Create Subscriptions for each Topic
-resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for sub in flattenedSubscriptions :{
-  name: '${serviceBusName}/${sub.topic.name}/${sub.subscriptionName}'
+resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for sub in flattenedSubscriptions: {
+  name: '${serviceBusName}/${sub.topicName}/${sub.subscriptionName}'
   dependsOn: [
     topicResources
   ]

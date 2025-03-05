@@ -2,7 +2,6 @@ param serviceBusName string
 param queues array
 param location string = resourceGroup().location
 param topics object
-param subscriptions array
 param tags object = {
   Application: 'API'
   Company: 'KMC'

@@ -34,10 +34,8 @@
         }
       }
     ],
-    "topics": [
-      {
-        "name": "topic1",
-        
+    "topics": {
+      "topic1":{
         "properties": {
           "supportOrdering": true,
           "defaultMessageTimeToLive": "P14D",
@@ -52,9 +50,7 @@
         {"topic": "topic1",  "subscriptionName": "subscription2" }
       ]
       },
-      {
-        "name": "topic2",
-        
+      "topic2":{
         "properties": {
           "supportOrdering": false,
           "defaultMessageTimeToLive": "P7D",
@@ -65,10 +61,10 @@
           "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
         },
         "subscriptions": [
-        {"topic": "topic2", "subscriptionName": "subscription3" }
+          {"topic": "topic2", "subscriptionName": "subscription3" }
       ]
       }
-    ],
+    },
     "tags": {
       "Application": "API",
       "Company": "KMC"

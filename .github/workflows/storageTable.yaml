@@ -45,7 +45,7 @@ jobs:
               # Extract values using jq
               #resourceGroupName=$(jq -r '.resourceGroupName' ./bicep/parameters/${{inputs.environment}}storageTable.json)
               storageAccounts=$(jq -r '.storageAccounts' ./bicep/parameters/${{inputs.environment}}storageTable.json)
-          
+              echo "storageAccounts: $storageAccounts"
               # Deploy using az CLI, passing the parameters as JSON arrays
               az deployment group create \
                 --resource-group "komatsupoc" \

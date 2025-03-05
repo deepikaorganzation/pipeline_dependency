@@ -2,6 +2,7 @@ param serviceBusName string
 param queues array
 param location string = resourceGroup().location
 param topics object
+param subscriptions array
 param tags object = {
   Application: 'API'
   Company: 'KMC'
@@ -26,22 +27,16 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = [
 }]
 
 
-var flattenedSubscriptions = [for topic in topics: [
-  for subscription in topic.value.subscriptions: {
-    topicName: topic.value.name
-    subscriptionName: subscription.subscriptionName
-  }
-]].flatten()
 
 // Create Topics
-resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in topics: {
+resource topicResources 'Microsoft.ServiceBus/namespaces/topics@2021-11-01' = [for topic in items(topics): {
   name: '${serviceBusName}/${topic.value.name}'
   properties: topic.value.properties
 }]
 
 // Create Subscriptions for each Topic
-resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for sub in flattenedSubscriptions: {
-  name: '${serviceBusName}/${sub.topicName}/${sub.subscriptionName}'
+resource subscriptionResources 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021-11-01' = [for sub in subscriptions: {
+  name: '${serviceBusName}/${sub.topic}/${sub.subscriptionName}'
   dependsOn: [
     topicResources
   ]

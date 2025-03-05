@@ -48,7 +48,7 @@ jobs:
           queues=$(jq -r '.serivceBus[0].queues' ./bicep/parameters/servicebus.json)
           topics=$(jq -r '.serivceBus[0].topics | tojson' ./bicep/parameters/servicebus.json)
           tags=$(jq -r '.serivceBus[0].tags' ./bicep/parameters/servicebus.json)
-          
+          subs=$(jq -r '.serivceBus[0].topics.subscriptions' ./bicep/parameters/servicebus.json)
           # Deploy using Bicep
           az deployment group create \
             --resource-group "komatsupoc" \
@@ -56,5 +56,6 @@ jobs:
             --parameters serviceBusName="$serviceBusName" \
                           queues="$queues" \
                           topics="$topics" \
-                          tags="$tags"
+                          tags="$tags" \
+                          subscriptions="$subs"
 

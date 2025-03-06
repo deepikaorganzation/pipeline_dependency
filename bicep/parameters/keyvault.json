@@ -1,7 +1,7 @@
 {
     "keyvault": [
       {
-        "keyVaultName": "myKeyVault",
+        "keyVaultName": "xxx-mu-poc",
         
         "properties":{
           "sku": {

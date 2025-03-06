@@ -47,8 +47,8 @@
     },
     {
       "name": "mytorageccountxxxpoc",
-      "tables": [],
-      "containers": [],
+      "tables": ["tables2"],
+      "containers": ["outbound"],
       "tags": {
         "environment": "dev",
         "department": "data",

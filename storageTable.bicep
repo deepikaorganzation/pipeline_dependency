@@ -27,7 +27,7 @@ resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServ
   }
 }]
 
-resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.tables != null) {
+resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.tables != []) {
   parent: storageAccountTableService[index]
   name: storageAccountObj.tables
   
@@ -40,7 +40,7 @@ resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServic
   }
 }]
 
-resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.containers != null) {
+resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.containers != []) {
   parent: storageAccountBlobService[index]
   name: storageAccountObj.containers
   

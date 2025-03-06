@@ -39,19 +39,7 @@
           "defaultAction": "Allow"
         },
         "supportsHttpsTrafficOnly": true,
-        "encryption": {
-          "services": {
-            "file": {
-              "keyType": "Account",
-              "enabled": true,
-              "lastEnabledTime": "2024-11-05T12:18:31.3842744Z"
-            },
-            "blob": {
-              "keyType": "Account",
-              "enabled": true,
-              "lastEnabledTime": "2024-11-05T12:18:31.3842744Z"
-            }
-          },
+        
           "keySource": "Microsoft.Storage"
         },
         "accessTier": "Hot"
@@ -90,20 +78,8 @@
           "defaultAction": "Allow"
         },
         "supportsHttpsTrafficOnly": true,
-        "encryption": {
-          "services": {
-            "file": {
-              "keyType": "Account",
-              "enabled": true,
-              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
-            },
-            "blob": {
-              "keyType": "Account",
-              "enabled": true,
-              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
-            }
-          },
-          "keySource": "Microsoft.Storage"
+        
+        "keySource": "Microsoft.Storage"
         },
         "accessTier": "Cool"
       }

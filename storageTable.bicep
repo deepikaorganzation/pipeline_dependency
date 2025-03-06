@@ -15,7 +15,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = [for st
     allowBlobPublicAccess: storageAccountObj.properties.allowBlobPublicAccess
     networkAcls: storageAccountObj.properties.networkAcls
     supportsHttpsTrafficOnly: storageAccountObj.properties.supportsHttpsTrafficOnly
-    encryption: storageAccountObj.properties.encryption
     accessTier: storageAccountObj.properties.accessTier
   }
 }]

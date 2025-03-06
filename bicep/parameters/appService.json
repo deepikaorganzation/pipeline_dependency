@@ -1,0 +1,49 @@
+{
+    "aseName": "your-prod-ase-name",
+    "aseResourceGroup": "your-prod-ase-resource-group",
+    "appServicePlans": [
+      {
+        "appServicePlanName": "kom-kx1-eus-dev-sp",
+        
+        "location": "Central US",
+        "capacity": 1,
+        "sku": {
+          "name": "S1",
+          "tier": "Standard",
+          "family": "S",
+          "capacity": 1
+        },
+        "targetWorkerCount": 2,
+        "perSiteScaling": false,
+        "elasticScaleEnabled": false,
+        "zoneRedundant": false,
+        "tags": {
+          "Company": "KAC",
+          "Environment": "DEV",
+          "Project": "Komatsu Experience (KX)"
+        }
+      },
+      {
+        "appServicePlanName": "kom-kx2-eus-prod-sp",
+        
+        "location": "East US",
+        "capacity": 2,
+        "sku": {
+          "name": "P1V2",
+          "tier": "PremiumV2",
+          "family": "P",
+          "capacity": 2
+        },
+        "targetWorkerCount": 4,
+        "perSiteScaling": true,
+        "elasticScaleEnabled": true,
+        "zoneRedundant": true,
+        "tags": {
+          "Company": "KAC",
+          "Environment": "PROD",
+          "Project": "Komatsu Experience (KX)"
+        }
+      }
+    ]
+  }
+  

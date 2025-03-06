@@ -1,30 +1,18 @@
-param environment string // Environment parameter
-param region string = 'eastus' // Region parameter
-param applicationInsightsName string // Application Insights Name
-param workspaceResourceId string // Log Analytics Workspace Resource ID
-param retentionInDays int = 90 // Retention in days, default to 90
-
-resource appInsights 'microsoft.insights/components@2020-02-02' = {
-  name: applicationInsightsName
-  location: region
-  kind: 'web'
-  tags: {
-    Company: 'KAC'
-    Environment: environment
-    Project: 'poc'
-  }
+param applicationInsights array
+resource appInsights 'microsoft.insights/components@2020-02-02' = [for ai in applicationInsights: {
+  name: ai.applicationInsightsName
+  location: ai.region
+  kind: ai.kind
+  tags: ai.tags
   properties: {
-    Application_Type: 'web'
-    Flow_Type: 'Redfield'
-    Request_Source: 'IbizaAIExtension'
-
-    RetentionInDays: retentionInDays
-    WorkspaceResourceId: workspaceResourceId
-    IngestionMode: 'LogAnalytics'
-    publicNetworkAccessForIngestion: 'Enabled'
-    publicNetworkAccessForQuery: 'Enabled'
+    Application_Type: ai.Application_Type
+    Flow_Type: ai.Flow_Type
+    Request_Source: ai.Request_Source
+    RetentionInDays: ai.retentionInDays
+    WorkspaceResourceId: ai.WorkspaceResourceId
+    IngestionMode: ai.IngestionMode
+    publicNetworkAccessForIngestion: ai.publicNetworkAccessForIngestion
+    publicNetworkAccessForQuery: ai.publicNetworkAccessForQuery
   }
-}
+}]
 
-output appInsightsNameOutput string = appInsights.name
-output appInsightsUri string = 'https://${appInsights.name}.dev.azuresynapse.net'

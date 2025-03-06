@@ -1,7 +1,7 @@
 {
   "storageAccounts": [
     {
-      "name": "komkxintdataeusdevdl1",
+      "name": "myStorageAccountxxxpoc1",
       "tables": [
         "tables1",
         "komkxintdataeusdevdltable02",
@@ -43,10 +43,10 @@
           "keySource": "Microsoft.Storage"
         },
         "accessTier": "Hot"
-      }
+      
     },
     {
-      "name": "komkxintappeusdevsa1",
+      "name": "myStorageAccountxxxpoc",
       "tables": [],
       "containers": [],
       "tags": {
@@ -83,7 +83,7 @@
         },
         "accessTier": "Cool"
       }
-    }
+    
   ],
   "serivceBus": [
     {

@@ -37,9 +37,12 @@ jobs:
 
     - name: Deploy Bicep template to Azure
       run: |
+        appService=$(jq -r '.appServicePlans | tojson' ./bicep/parameters/appService.json)
+        aseName=$(jq -r '.aseName' ./bicep/parameters/appService.json)
+        aseResourceGroup=$(jq -r '.aseResourceGroup' ./bicep/parameters/appService.json)
         az deployment group create \
           --resource-group "komatsupoc" \
           --template-file ./appservice.bicep \
-          --parameters appServicePlanName=appServicexxx\
+          --parameters appServicePlans=$appService\
                         aseName=aseName\
 

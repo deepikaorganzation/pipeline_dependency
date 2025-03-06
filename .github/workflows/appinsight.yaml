@@ -47,9 +47,8 @@ jobs:
 
       - name: Deploy Key Vault Bicep Template
         run: |
+            appInsight=$(jq -r '.applicationInsights | tojson' ./bicep/parameters/appInsight.json)
             az deployment group create \
             --resource-group "komatsupoc" \
             --template-file ./appinsight.bicep \
-            --parameters environment='${{ inputs.ENVIRONMENT }}'\
-              applicationInsightsName='myappInsight${{ inputs.ENVIRONMENT }}poc'\
-              workspaceResourceId='/subscriptions/54046951-33c9-43a8-b297-54bbd93112ab/resourceGroups/komatsupoc/providers/Microsoft.OperationalInsights/workspaces/MyLogpoc'
+            --parameters applicationInsights=$appInsight

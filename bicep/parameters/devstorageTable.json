@@ -3,7 +3,7 @@
     {
       "name": "komkxintdataeusdevdl1",
       "tables": [
-        "komkxintdataeusdevdltable01",
+        "tables1",
         "komkxintdataeusdevdltable02",
         "komkxintdataeusdevdltable03",
         "komkxintdataeusdevdltable04",
@@ -44,12 +44,12 @@
             "file": {
               "keyType": "Account",
               "enabled": true,
-              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+              "lastEnabledTime": "2024-11-05T12:18:31.3842744Z"
             },
             "blob": {
               "keyType": "Account",
               "enabled": true,
-              "lastEnabledTime": "2024-11-13T06:32:31.0996132Z"
+              "lastEnabledTime": "2024-11-05T12:18:31.3842744Z"
             }
           },
           "keySource": "Microsoft.Storage"
@@ -108,5 +108,101 @@
         "accessTier": "Cool"
       }
     }
-  ]
+  ],
+  "serivceBus": [
+    {
+    "serviceBusName": "d-sb-message-service-eus-02",
+    "queues": [
+      {
+        "name": "queue1",
+        "properties": {
+          "lockDuration": "PT5M",
+          "maxSizeInMegabytes": 1024,
+          "requiresDuplicateDetection": false,
+          "requiresSession": false,
+          "defaultMessageTimeToLive": "P14D",
+          "deadLetteringOnMessageExpiration": true,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "maxDeliveryCount": 10,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+          "enablePartitioning": false,
+          "enableExpress": false
+        }
+      },
+      {
+        "name": "queue2",
+        "properties": {
+          "lockDuration": "PT5M",
+          "maxSizeInMegabytes": 1024,
+          "requiresDuplicateDetection": false,
+          "requiresSession": false,
+          "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+          "deadLetteringOnMessageExpiration": true,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "maxDeliveryCount": 10,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+          "enablePartitioning": false,
+          "enableExpress": false
+        }
+      }
+    ],
+    "topics": {
+      "topic1":{
+        "name": "sbt-aem-assetsitemapmeta",
+        "properties": {
+          "supportOrdering": false,
+          "defaultMessageTimeToLive": "P14D",
+          "maxMessageSizeInKilobytes": 1024,
+          "maxSizeInMegabytes": 1024,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "enableBatchedOperations": true,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+        },
+        "subscriptions": [
+        {"topic": "sbt-aem-assetsitemapmeta", "subscriptionName": "sub-elsrch-assetsitemapmeta" }
+      ]
+      },
+      "topic2":{
+        "name": "sbt-pim-partsassetimg",
+        "properties": {
+          "supportOrdering": true,
+          "defaultMessageTimeToLive": "P14D",
+          "maxMessageSizeInKilobytes": 1024,
+          "maxSizeInMegabytes": 1024,
+          "duplicateDetectionHistoryTimeWindow": "PT10M",
+          "enableBatchedOperations": true,
+          "autoDeleteOnIdle": "P10675199DT2H48M5.477S"
+        },
+        "subscriptions": [
+          {"topic": "sbt-pim-partsassetimg", "subscriptionName": "sub-aemmedia-partsassetimg" },
+          {"topic": "sbt-pim-partsassetimg", "subscriptionName": "sub-aemmediafldrcreate-partsassetimg" }
+      ]
+      }
+    },
+    "tags": {
+      "Application": "API",
+      "Company": "KMC"
+    }
+  }],
+  "keyvault": [
+      {
+        "keyVaultName": "myKeyVault",
+        "tags":{
+          "Comapany": "KAC",
+          "Environment": "Dev"
+        },
+        "properties":{
+          "sku": {
+          "family": "A",
+          "name": "standard"
+          },
+          "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+          "enableSoftDelete": true,
+          "softDeleteRetentionInDays": 90,
+          "accessPolicies": []
+        }
+
+      }
+
+    ]
 }

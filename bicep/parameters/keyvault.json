@@ -1,19 +1,19 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "location": {
-        "value": "eastus"
-      },
-      "myKeyVault" : {
-        "value" : "kx-keyvault-test"
-      },
-      "secrets" : {
-        "value" : [
-          {"name" : "pimfeed-com-sftp-key", "value" : "PIMFEED_COM_SFTP_KEY" },
-          { "name" : "pimfeed-pim-awss3-accesskeyid", "value" : "PIMFEED_PIM_AWSS3_ACCESSKEYID" },
-          { "name" : "notification-emailservice-secret", "value" : "NOTIFICATION_EMAILSERVICE_SECRET" }  
-        ]
+    "keyvault": [
+      {
+        "keyVaultName": "myKeyVault",
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "properties":{
+          "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+          "enableSoftDelete": true,
+          "softDeleteRetentionInDays": 90,
+          "accessPolicies": []
+        }
+
       }
-    }
+
+    ]
   }

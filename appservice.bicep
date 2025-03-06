@@ -1,4 +1,6 @@
 param appServicePlanName string = 'kom-kx1-eus-dev-sp'
+param aseName string
+param aseResourceGroup string
 param location string = 'Central US'
 param capacity int = 1
 param skuName string = 'S1'
@@ -14,10 +16,16 @@ param tags object = {
   Project: 'Komatsu Experience (KX)'
 }
 
+resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' existing = {
+  name: aseName
+  scope: resourceGroup(aseResourceGroup)
+}
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
   name: appServicePlanName
   location: location
   tags: tags
+  
   sku: {
     name: skuName
     tier: skuTier
@@ -29,5 +37,6 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
     perSiteScaling: perSiteScaling
     elasticScaleEnabled: elasticScaleEnabled
     zoneRedundant: zoneRedundant
+    hostingEnvironmentProfile: ase
   }
 }

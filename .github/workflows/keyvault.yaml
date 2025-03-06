@@ -47,7 +47,8 @@ jobs:
 
       - name: Deploy Key Vault Bicep Template
         run: |
+            keyVaut=$(jq -r '.keyvault' ./bicep/parameters/${{inputs.environment}}storageTable.json)
             az deployment group create \
             --resource-group "komatsupoc" \
             --template-file ./keyvault.bicep \
-            --parameters environment='${{ inputs.ENVIRONMENT }}'
+            --parameters keyVaults=$keyVaut

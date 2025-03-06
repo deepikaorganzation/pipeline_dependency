@@ -1,0 +1,592 @@
+{
+    "id": "/subscriptions/7f07baf7-8bba-4b88-b300-74ba5b15f52d/resourceGroups/kac_KX_Integrations_Dev_rg/providers/Microsoft.KeyVault/vaults/kom-kx-eus-dev-kv",
+    "name": "kom-kx-eus-dev-kv",
+    "type": "Microsoft.KeyVault/vaults",
+    "location": "eastus",
+    "tags": {
+        "Company": "KAC",
+        "Environment": "DEV",
+        "Project": "Komatsu Experience (KX)"
+    },
+    "properties": {
+        "sku": {
+            "family": "A",
+            "name": "Standard"
+        },
+        "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+        "networkAcls": {
+            "bypass": "AzureServices",
+            "defaultAction": "Deny",
+            "ipRules": [
+                {
+                    "value": "136.226.244.97/32"
+                },
+                {
+                    "value": "171.76.81.55/32"
+                },
+                {
+                    "value": "170.85.54.114/32"
+                },
+                {
+                    "value": "20.235.221.235/32"
+                },
+                {
+                    "value": "167.103.3.24/32"
+                },
+                {
+                    "value": "136.226.242.119/32"
+                },
+                {
+                    "value": "136.226.52.187/32"
+                },
+                {
+                    "value": "136.226.252.107/32"
+                },
+                {
+                    "value": "165.225.60.122/32"
+                },
+                {
+                    "value": "136.226.68.169/32"
+                },
+                {
+                    "value": "136.226.69.97/32"
+                },
+                {
+                    "value": "136.226.52.184/32"
+                },
+                {
+                    "value": "136.226.50.198/32"
+                }
+            ],
+            "virtualNetworkRules": [
+                {
+                    "id": "/subscriptions/7f07baf7-8bba-4b88-b300-74ba5b15f52d/resourcegroups/kmc_appinnovation_network_eus_devtst_rg/providers/microsoft.network/virtualnetworks/okn-eus-devtst-appinnovation-ase-apim-spoke-vnet/subnets/okn-eus-dev-appinnovation-ase-apim-spoke-subnet",
+                    "ignoreMissingVnetServiceEndpoint": true
+                }
+            ]
+        },
+        "accessPolicies": [
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "dcab8936-f868-4264-86ba-89cf0f9e0e7b",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "GetRotationPolicy",
+                        "SetRotationPolicy",
+                        "Rotate",
+                        "Purge",
+                        "Release",
+                        "Encrypt",
+                        "Decrypt",
+                        "UnwrapKey",
+                        "WrapKey",
+                        "Verify",
+                        "Sign"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List",
+                        "Set",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "Purge"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "ManageContacts",
+                        "ManageIssuers",
+                        "GetIssuers",
+                        "ListIssuers",
+                        "SetIssuers",
+                        "DeleteIssuers",
+                        "Purge"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "0b6dedf0-1c14-4c6f-8d3e-52f28d7258ce",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "fec4898a-61c6-4cf0-b95c-48710900e46e",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "GetRotationPolicy",
+                        "SetRotationPolicy",
+                        "Rotate"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List",
+                        "Set",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "ManageContacts",
+                        "ManageIssuers",
+                        "GetIssuers",
+                        "ListIssuers",
+                        "SetIssuers",
+                        "DeleteIssuers"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "46ca69f5-e376-4601-8a9b-4d0a8909ddc1",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "GetRotationPolicy",
+                        "SetRotationPolicy",
+                        "Rotate"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List",
+                        "Set",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "ManageContacts",
+                        "ManageIssuers",
+                        "GetIssuers",
+                        "ListIssuers",
+                        "SetIssuers",
+                        "DeleteIssuers"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "68f4f919-f174-4347-a1ff-7fe6b845b8c6",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "c81e555d-ccfc-4e43-b510-544398845bb8",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "c56d690c-25fc-47f1-b3c8-4254216c651f",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "GetRotationPolicy",
+                        "SetRotationPolicy",
+                        "Rotate"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List",
+                        "Set",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore"
+                    ],
+                    "certificates": []
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "7cd52457-5773-49d1-a86e-deee0348ca49",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "GetRotationPolicy",
+                        "SetRotationPolicy",
+                        "Rotate"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List",
+                        "Set",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List",
+                        "Update",
+                        "Create",
+                        "Import",
+                        "Delete",
+                        "Recover",
+                        "Backup",
+                        "Restore",
+                        "ManageContacts",
+                        "ManageIssuers",
+                        "GetIssuers",
+                        "ListIssuers",
+                        "SetIssuers",
+                        "DeleteIssuers"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "ecfc76d7-2d4a-4276-8aa2-89ee0b804e0d",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "List",
+                        "Get"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "41616c5f-cdc6-4f91-adb2-5b584db7116a",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "3ed9241c-3745-4f26-8ce3-368ab6d73a0a",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "2f66e4a9-c552-4937-a773-9ed7f6995595",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "eceee661-c2ee-43ec-a15c-9b7a93015cfb",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "cd1fa29d-8e8d-4d1b-9c19-c3fb3bb99d41",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "1e34e926-48a0-420d-8d3e-7b71415696ae",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "4c192900-4076-40e4-a431-77e7039b429f",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "d36d3c7f-631f-47cd-b052-3866cadee602",
+                "permissions": {
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ],
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "3e0e5c9c-87cd-4de7-a2ab-27676552167a",
+                "permissions": {
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ],
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "38c1ac83-cb75-4017-a61c-b8d57f485200",
+                "permissions": {
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ],
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "Get",
+                        "List"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "659cb366-b577-4384-b593-e091748088e6",
+                "permissions": {
+                    "certificates": [
+                        "Get",
+                        "List"
+                    ],
+                    "keys": [
+                        "Get",
+                        "List"
+                    ],
+                    "secrets": [
+                        "List",
+                        "Get"
+                    ]
+                }
+            },
+            {
+                "tenantId": "58be8688-6625-4e52-80d8-c17f3a9ae08a",
+                "objectId": "c45f51bf-911f-4529-a6aa-df255a1be0c9",
+                "permissions": {
+                    "certificates": [
+                        "get",
+                        "list"
+                    ],
+                    "keys": [
+                        "get",
+                        "list"
+                    ],
+                    "secrets": [
+                        "get",
+                        "list"
+                    ]
+                }
+            }
+        ],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 90,
+        "enableRbacAuthorization": false,
+        "vaultUri": "https://kom-kx-eus-dev-kv.vault.azure.net/",
+        "provisioningState": "Succeeded"
+    },
+    "apiVersion": "2016-10-01"
+}

@@ -1,0 +1,11 @@
+name: Sonar Scan
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    sonarScan:
+        name: Sonar Scan
+        runs-on: ubuntu-latest

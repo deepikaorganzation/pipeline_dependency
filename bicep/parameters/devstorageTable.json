@@ -40,9 +40,9 @@
         },
         "supportsHttpsTrafficOnly": true,
         
-          "keySource": "Microsoft.Storage"
-        },
+        "keySource": "Microsoft.Storage",
         "accessTier": "Hot"
+        }
       
     },
     {
@@ -78,10 +78,10 @@
           "defaultAction": "Allow"
         },
         "supportsHttpsTrafficOnly": true,
-        
+        "accessTier": "Cool",
         "keySource": "Microsoft.Storage"
-        },
-        "accessTier": "Cool"
+        }
+        
       }
     
   ],

@@ -1,7 +1,7 @@
 {
   "storageAccounts": [
     {
-      "name": "myStorageAccountxxxpoc1",
+      "name": "mystorageaccountxxxpoc1",
       "tables": [
         "tables1",
         "komkxintdataeusdevdltable02",
@@ -46,7 +46,7 @@
       
     },
     {
-      "name": "myStorageAccountxxxpoc",
+      "name": "mytorageccountxxxpoc",
       "tables": [],
       "containers": [],
       "tags": {

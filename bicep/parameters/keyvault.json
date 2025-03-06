@@ -4,6 +4,10 @@
         "keyVaultName": "myKeyVault",
         
         "properties":{
+          "sku": {
+          "family": "A",
+          "name": "standard"
+          },
           "tenantId": "63957883-ec24-45ce-8780-a226ffd9e7c0",
           "enableSoftDelete": true,
           "softDeleteRetentionInDays": 90,

@@ -25,7 +25,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = [for st
 
 resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for table in tables: {
   
-  name: '${table.storageAccount}/default/${table.tableName}'
+  name: '${table.storageaccountName}/default/${table.tableName}'
   
 }]
 
@@ -33,5 +33,5 @@ resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/t
 
 resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for container in containers: {
   
-  name: '${container.storageAccount}/default/${container.tableName}'
+  name: '${container.storageaccountName}/default/${container.containerName}'
 }]

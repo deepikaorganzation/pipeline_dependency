@@ -182,8 +182,8 @@
 
     ],
     "tables":[
-      { "tableName": "mytables-01", "storageaccount": "mystorageaccountxxxpoc1"},
-      { "tableName": "mytables-02", "storageaccount": "mytorageccountxxxpoc"}
+      { "tableName": "donotconcent", "storageaccount": "mystorageaccountxxxpoc1"},
+      { "tableName": "whyareyouhere", "storageaccount": "mytorageccountxxxpoc"}
     ],
     "containers":[
       {"containerName": "error", "storageaccount": "mystorageaccountxxxpoc1"},

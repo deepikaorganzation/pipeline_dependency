@@ -49,7 +49,7 @@ jobs:
         run: |
             appInsight=$(jq -r '.applicationInsights' ./bicep/parameters/appInsight.json)
             echo "appInsight: $appInsight"
-            # az deployment group create \
-            # --resource-group "komatsupoc" \
-            # --template-file ./appinsight.bicep \
-            # --parameters applicationInsights=$appInsight
+            az deployment group create \
+            --resource-group "komatsupoc" \
+            --template-file ./appinsight.bicep \
+            --parameters applicationInsights=$appInsight

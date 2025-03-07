@@ -180,5 +180,17 @@
 
       }
 
+    ],
+    "tables":[
+      { "tableName": "mytables-01", "storageaccount": "mystorageaccountxxxpoc1"},
+      { "tableName": "mytables-02", "storageaccount": "mytorageccountxxxpoc"}
+    ],
+    "containers":[
+      {"containerName": "error", "storageaccount": "mystorageaccountxxxpoc1"},
+      {"containerName": "inbound", "storageaccount": "mystorageaccountxxxpoc1"},
+      {"containerName": "outbound", "storageaccount": "mystorageaccountxxxpoc1"},
+      {"containerName": "pim-to-adobe", "storageaccount": "mystorageaccountxxxpoc1"},
+      {"containerName": "retrigger", "storageaccount": "mystorageaccountxxxpoc1"},
+      {"containerName": "outbound", "storageaccount": "mytorageccountxxxpoc"}
     ]
 }

@@ -1,5 +1,7 @@
 param location string = resourceGroup().location
 param storageAccounts array
+param tables array
+param containers array
 
 // Iterate over storage accounts
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = [for storageAccountObj in storageAccounts: {
@@ -20,28 +22,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = [for st
 }]
 
 // Define tables and containers for each storage account
-resource storageAccountTableService 'Microsoft.Storage/storageAccounts/tableServices@2022-05-01' = [for (storageAccountObj, index) in storageAccounts: if (storageAccountObj.tables != null && storageAccountObj.tables != []) {
-  parent: storageAccount[index]
-  name: 'default'
-  properties: {
-  }
-}]
 
-resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for (storageAccountObj, index) in storageAccounts: if (storageAccountObj.tables != null && storageAccountObj.tables != []) {
-  parent: storageAccountTableService[index]
-  name: storageAccountObj.tables
+resource storageAccountTables 'Microsoft.Storage/storageAccounts/tableServices/tables@2022-05-01' = [for table in tables: {
+  
+  name: '${table.storageAccount}/default/${table.tableName}'
   
 }]
 
-resource storageAccountBlobService 'Microsoft.Storage/storageAccounts/blobServices@2022-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.containers != null && storageAccountObj.containers != []) {
-  parent: storageAccount[index]
-  name: 'default'
-  properties: {
-  }
-}]
 
-resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for (storageAccountObj, index) in storageAccounts: if(storageAccountObj.containers != null && storageAccountObj.containers != []) {
-  parent: storageAccountBlobService[index]
-  name: storageAccountObj.containers
+
+resource storageAccountContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for container in containers: {
   
+  name: '${container.storageAccount}/default/${container.tableName}'
 }]

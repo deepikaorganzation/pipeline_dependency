@@ -1,5 +1,4 @@
 param applicationInsights array
-param WorkspaceResourceId string
 resource appInsights 'microsoft.insights/components@2020-02-02' = [for ai in applicationInsights: {
   name: ai.applicationInsightsName
   location: ai.region
@@ -10,7 +9,7 @@ resource appInsights 'microsoft.insights/components@2020-02-02' = [for ai in app
     Flow_Type: ai.Flow_Type
     Request_Source: ai.Request_Source
     RetentionInDays: ai.retentionInDays
-    WorkspaceResourceId: WorkspaceResourceId
+    WorkspaceResourceId: ai.workspaceResourceId
     IngestionMode: ai.IngestionMode
     publicNetworkAccessForIngestion: ai.publicNetworkAccessForIngestion
     publicNetworkAccessForQuery: ai.publicNetworkAccessForQuery

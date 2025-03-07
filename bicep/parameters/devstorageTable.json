@@ -2,21 +2,7 @@
   "storageAccounts": [
     {
       "name": "mystorageaccountxxxpoc1",
-      "tables": [
-        "mytables-01",
-        "komkxintdataeusdevdltable02",
-        "komkxintdataeusdevdltable03",
-        "komkxintdataeusdevdltable04",
-        "komkxintdataeusdevdltable05",
-        "komkxintdataeusdevdltable06"
-      ],
-      "containers": [
-        "error",
-        "inbound",
-        "outbound",
-        "pim-to-adobe",
-        "retrigger"
-      ],
+      
       "tags": {
         "environment": "dev",
         "department": "data",
@@ -47,8 +33,7 @@
     },
     {
       "name": "mytorageccountxxxpoc",
-      "tables": ["mytables-02"],
-      "containers": ["outbound"],
+      
       "tags": {
         "environment": "dev",
         "department": "data",

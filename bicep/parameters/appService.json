@@ -27,7 +27,6 @@
         "appServicePlanName": "kom-kx2-eus-prod-sp",
         
         "location": "East US",
-        "capacity": 2,
         "sku": {
           "name": "P1V2",
           "tier": "PremiumV2",

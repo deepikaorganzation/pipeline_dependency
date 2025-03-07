@@ -47,8 +47,9 @@ jobs:
 
       - name: Deploy Key Vault Bicep Template
         run: |
-            appInsight=$(jq -r '.applicationInsights | tojson' ./bicep/parameters/appInsight.json)
-            az deployment group create \
-            --resource-group "komatsupoc" \
-            --template-file ./appinsight.bicep \
-            --parameters applicationInsights=$appInsight
+            appInsight=$(jq -r '.applicationInsights' ./bicep/parameters/appInsight.json)
+            echo "appInsight: $appInsight"
+            # az deployment group create \
+            # --resource-group "komatsupoc" \
+            # --template-file ./appinsight.bicep \
+            # --parameters applicationInsights=$appInsight

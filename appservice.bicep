@@ -3,8 +3,8 @@ param aseName string
 param aseResourceGroup string
 
 resource ase 'Microsoft.Web/hostingEnvironments@2021-02-01' existing = {
-  name: appServicePlans[0].aseName
-  scope: resourceGroup(appServicePlans[0].aseResourceGroup)
+  name: aseName
+  scope: resourceGroup(aseResourceGroup)
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = [for appServicePlan in appServicePlans: {

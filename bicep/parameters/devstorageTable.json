@@ -177,5 +177,26 @@
       {"containerName": "pim-to-adobe", "storageaccount": "mystorageaccountxxxpoc1"},
       {"containerName": "retrigger", "storageaccount": "mystorageaccountxxxpoc1"},
       {"containerName": "outbound", "storageaccount": "mytorageccountxxxpoc"}
+    ],
+    "applicationInsights": [
+      {
+        "tags":{
+            "Company": "KAC",
+            "Environment": "Dev",
+            "Project": "poc"
+          },
+        "kind": "web",
+        "environment": "dev",
+        "region": "eastus",
+        "applicationInsightsName": "souvik-appinsight-poc",
+        "workspaceResourceId": "/subscriptions/54046951-33c9-43a8-b297-54bbd93112ab/resourceGroups/komatsupoc/providers/Microsoft.OperationalInsights/workspaces/MyLogpoc",
+        "retentionInDays": 90,
+        "Application_Type": "web",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension",
+        "IngestionMode": "LogAnalytics",
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
     ]
 }

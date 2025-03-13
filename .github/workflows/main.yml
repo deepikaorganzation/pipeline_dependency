@@ -86,7 +86,7 @@ jobs:
     uses: ./.github/workflows/versioning.yml
     with: 
       environment: ${{ github.event.inputs.environment }}
-      change_type: ${{ github.event.inputs.change_type }}
+      change-type: ${{ github.event.inputs.change_type }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

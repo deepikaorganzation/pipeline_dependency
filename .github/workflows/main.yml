@@ -83,9 +83,10 @@ jobs:
   #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
   test5:
-    uses: ./.github/workflows/appinsight.yaml
+    uses: ./.github/workflows/versioning.yml
     with: 
       environment: ${{ github.event.inputs.environment }}
+      change_type: ${{ github.event.inputs.change_type }}
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

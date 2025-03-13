@@ -24,7 +24,6 @@ jobs:
           fetch-depth: 0  # Fetch all history for tags
 
       - name: Get latest tag and determine version change type
-        if: 
         id: versioning
         run: |
           # Get the latest tag or default to v1.0.0 if none exists

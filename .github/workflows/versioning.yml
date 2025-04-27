@@ -21,40 +21,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history for tags
+          fetch-depth: 0
 
-      - name: Get latest tag and determine version change type
+      - name: Get latest tag and determine version change type 
+        if: ${{ inputs.environment == 'prod' }}
         id: versioning
         run: |
-          # Get the latest tag or default to v1.0.0 if none exists
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
           VERSION=${LAST_TAG#v}
           MAJOR=$(echo $VERSION | cut -d '.' -f 1)
           MINOR=$(echo $VERSION | cut -d '.' -f 2)
           PATCH=$(echo $VERSION | cut -d '.' -f 3)
 
-          # Check if any commit message contains "BREAKING CHANGE"
-          changetype=${{inputs.change-type}}
-          if echo "$changetype" | grep -i "major"; then
-            # If a BREAKING CHANGE is found, it's a major version update
-            echo "Detected BREAKING CHANGE "
+          changetype=${{ inputs.change-type }}
+          if echo "$changetype" | grep -i "Major"; then
             MAJOR=$((MAJOR + 1))
-            MINOR=0  # Reset MINOR for a major release
-            PATCH=0  # Reset PATCH for a new major release
-          else
-            # If no BREAKING CHANGE is found, it's a minor version update
+            MINOR=0
+            PATCH=0
+          elif echo "$changetype" | grep -i "Minor"; then
             MINOR=$((MINOR + 1))
-            PATCH=0  # Reset PATCH for a new minor release
+            PATCH=0
+          elif echo "$changetype" | grep -i "Patch"; then
+            PATCH=$((PATCH + 1))
           fi
 
-          # Construct the new version.
           NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Create and push new version tag
+        if: ${{ inputs.environment == 'prod' && github.ref_name == 'main' }}
         run: |
           git config --global user.email "souvikg90@gmail.com"
-          git config --global user.name "souvikg90"
+          git config --global user.name "sghosh"
           git tag -a $NEW_VERSION -m "Release version $NEW_VERSION"
           git push origin $NEW_VERSION

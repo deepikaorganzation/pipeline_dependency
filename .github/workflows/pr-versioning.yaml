@@ -1,0 +1,48 @@
+name: PR Versioning Trigger
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  parse-pr-and-run-versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Parse PR checkboxes for inputs
+        id: pr-body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const body = pr.data.body || "";
+
+            let changeType = 'Minor'; // default
+            if (body.includes('[x] Major')) changeType = 'Major';
+            else if (body.includes('[x] Patch')) changeType = 'Patch';
+            else if (body.includes('[x] NoChange')) changeType = 'NoChange';
+
+            let environment = 'dev'; // default
+            if (body.includes('[x] qa')) environment = 'qa';
+            else if (body.includes('[x] uat')) environment = 'uat';
+            else if (body.includes('[x] prod')) environment = 'prod';
+
+            core.setOutput('change_type', changeType);
+            core.setOutput('environment', environment);
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Call versioning workflow
+        uses: ./.github/workflows/versioning.yml
+        with:
+          change-type: ${{ steps.pr-body.outputs.change_type }}
+          environment: ${{ steps.pr-body.outputs.environment }}

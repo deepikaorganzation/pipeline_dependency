@@ -23,7 +23,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get latest tag and determine version change type 
+      - name: Check if PR is merged
+        run: |
+          if [[ "${{ github.event.pull_request.merged }}" != "true" ]]; then
+            echo "This PR was closed but not merged. Skipping versioning process."
+            exit 0
+          fi
+
+      - name: Get latest tag and determine version change type
         if: ${{ inputs.environment == 'prod' }}
         id: versioning
         run: |

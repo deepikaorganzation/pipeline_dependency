@@ -23,25 +23,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up .NET SDK
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0'
-
-      # Install dependencies
-      - name: Restore dependencies
-        run: dotnet restore
 
       # Initialize CodeQL for C#
       - name: Set up CodeQL
         uses: github/codeql-action/init@v3
-        with:
-          languages: 'csharp'
 
-      # Build the project
-      - name: Build the project
-        run: dotnet build --no-restore
 
       # Run CodeQL analysis and output SARIF to a known directory
       - name: Analyze with CodeQL

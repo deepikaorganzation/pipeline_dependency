@@ -1,31 +1,120 @@
-name: CodeQL Analysis
+name: "CodeQL .NET"
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  packages: read
+  statuses: write
+  issues: read
+  checks: write
+  pull-requests: write
+  security-events: write
 
 jobs:
   analyze:
+    name: Analyze .NET code with CodeQL
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v2
+      # Set up .NET SDK
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.x'
+          dotnet-version: '8.0'
 
-      - name: Build the project
-        run: dotnet build --configuration Release
+      # Install dependencies
+      - name: Restore dependencies
+        run: dotnet restore
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+      # Initialize CodeQL for C#
+      - name: Set up CodeQL
+        uses: github/codeql-action/init@v3
         with:
           languages: 'csharp'
 
-      - name: Analyze code with CodeQL
-        uses: github/codeql-action/analyze@v2
+      # Build the project
+      - name: Build the project
+        run: dotnet build --no-restore
+
+      # Run CodeQL analysis and output SARIF to a known directory
+      - name: Analyze with CodeQL
+        uses: github/codeql-action/analyze@v3
+        with:
+          output: codeql-results
+
+      # Debug SARIF content to verify if results exist
+      - name: Debug SARIF content
+        run: |
+          SARIF_FILE="codeql-results/csharp.sarif"
+          if [ -f "$SARIF_FILE" ]; then
+            echo "SARIF file found, displaying results:"
+            jq '.runs[].results[] | {level: .level, message: .message.text, file: .locations[0].physicalLocation.artifactLocation.uri, line: .locations[0].physicalLocation.region.startLine}' "$SARIF_FILE"
+          else
+            echo "SARIF file not found at $SARIF_FILE."
+          fi
+
+      # List Unique SARIF Levels (to verify there are non-info results)
+      - name: List Unique SARIF Levels
+        if: always()
+        run: |
+          SARIF_FILE="codeql-results/csharp.sarif"
+          if [ -f "$SARIF_FILE" ]; then
+            echo "Unique severity levels in SARIF:"
+            jq -r '[.runs[].results[].level] | unique' "$SARIF_FILE"
+          else
+            echo "SARIF file not found at $SARIF_FILE."
+          fi    
+
+      # Parse SARIF and summarize CodeQL results in GitHub Actions summary
+      - name: Display CodeQL results in summary
+        if: always()
+        run: |
+          SARIF_FILE="codeql-results/csharp.sarif"
+          if [ -f "$SARIF_FILE" ]; then
+            # Collect unique severity levels
+            SEVERITY_LEVELS=$(jq -r '[.runs[].results[].level] | unique' "$SARIF_FILE")
+            echo "Unique severity levels in SARIF: $SEVERITY_LEVELS"
+
+            # Count different levels of issues
+            PASSED=$(jq '[.runs[].results[] | select(.level == "note" or .level == "none" or .level == "info")] | length' "$SARIF_FILE")
+            WARNING=$(jq '[.runs[].results[] | select(.level == "warning")] | length' "$SARIF_FILE")
+            ERROR=$(jq '[.runs[].results[] | select(.level == "error")] | length' "$SARIF_FILE")
+            TOTAL=$((PASSED + WARNING + ERROR))
+
+            # Display summary in GitHub Actions
+            echo "## 🛡️ CodeQL Analysis Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Severity  | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| ✅ Info   | $PASSED |" >> $GITHUB_STEP_SUMMARY
+            echo "| ⚠️ Warning| $WARNING |" >> $GITHUB_STEP_SUMMARY
+            echo "| ❌ Error  | $ERROR |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔢 **Total** | **$TOTAL** |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Display top issues (excluding info level)
+            if [ "$TOTAL" -gt 0 ]; then
+              echo "### 📄 Top Issues" >> $GITHUB_STEP_SUMMARY
+              jq -r '.runs[].results[] | select(.level != "info") | "- Severity: \(.level) in file `\(.locations[0].physicalLocation.artifactLocation.uri)` on line \(.locations[0].physicalLocation.region.startLine): \(.message.text)"' "$SARIF_FILE" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "No actionable vulnerabilities found." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## ❗ CodeQL Analysis Failed" >> $GITHUB_STEP_SUMMARY
+            echo "No SARIF file found at $SARIF_FILE." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # Optional: Upload SARIF file as artifact (useful for inspection)
+      - name: Upload CodeQL SARIF as artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-analysis-sarif
+          path: codeql-results/csharp.sarif
+          
